@@ -11,7 +11,7 @@ import java.nio.ShortBuffer;
 import android.opengl.GLES20;
 
 /**
- * @author Anna
+ * @author slarson
  *
  */
 public class Ground implements Drawable{

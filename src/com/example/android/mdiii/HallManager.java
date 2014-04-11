@@ -19,7 +19,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 
 /**
- * @author Anna
+ * @author slarson
  *
  */
 public class HallManager {
@@ -97,10 +97,11 @@ public class HallManager {
 		this.halls = new Hall[numberOfHalls];
 		
 		contentsMap = new HashMap<Coord, Drawable>();
-		Coord coord = new Coord(0f, 0f, 9.0f );
+		Coord coord = new Coord(0f, 0f, 12.0f );
 		Drawable obj = new Ground();
 //		Drawable obj = new Plane();
 		contentsMap.put(coord, obj);
+		contentsMap.put(new Coord( 0f, 0f, 15.0f), new Ground());
 		
 		contentsList = new ArrayList<Contents>();
 		contentsList.add(new Contents(this, contentsMap, wallMatrix, mMVPMatrix, finalWallMatrix));

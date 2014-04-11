@@ -1,4 +1,4 @@
-
+update they way the plane points
 
 /*
  * do the vent lift thing
@@ -20,10 +20,8 @@ work on text overlay next
 */
 package com.example.android.mdiii;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -45,7 +43,7 @@ import android.util.Log;
 import com.example.android.mdiii.text.GLText;
 
 /**
- * @author Anna
+ * @author slarson
  *
  */
 public class MyGLRenderer implements GLSurfaceView.Renderer ,SensorEventListener{
@@ -85,6 +83,7 @@ work on plane rotation and text stuff
 	private float planeHeight;
 	private float wallXOffset;
 	private float wallYOffset;
+	private float drawableThreshold;
 	private boolean collisionDetected;
     private GLText glText;
     public static Context context;	
@@ -119,11 +118,7 @@ work on plane rotation and text stuff
 	private Contents contents;
 
 	public MyGLRenderer(GLSurfaceView view) {
-/*
-make z shorter
-add other wall
-make increments larger on other for loops
-	*/   
+
 		this.view = view;
         context = this.view.getContext();
         GraphicsUtils.context = context;		
@@ -156,7 +151,7 @@ make increments larger on other for loops
 		
 
 		yaw = 0f;
-		cameraSpeed = 0.010f;//1.25f;
+		cameraSpeed = 0.025f;//1.25f;
 		yawKludge = 0.01f;
 		pitchKludge = .1f;	
 		collisionDetected = false;
@@ -167,15 +162,15 @@ make increments larger on other for loops
 		linear_acceleration = new float[3];
 	      mSensorManager   = (SensorManager) this.view.getContext().getSystemService(Context.SENSOR_SERVICE);
 	      List<Sensor> list = mSensorManager.getSensorList(Sensor.TYPE_ALL);
-	      //Log.v(TAG,"Sensors:"+list.size());
+	      Log.v(TAG,"Sensors:"+list.size());
 	      
 	      for(Sensor sensor : list) {
-	         //Log.v(TAG, "sensor:"+sensor.getName() +" vendor:"+sensor.getVendor() +"\n");
+	         Log.v(TAG, "sensor:"+sensor.getName() +" vendor:"+sensor.getVendor() +"\n");
 	      }
 	      mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 	      
 	      if(mSensor==null){
-	    	  //Log.v(TAG, "sensor was null exiting");
+	    	  Log.v(TAG, "sensor was null exiting");
 	    	  System.exit(0);
 	      }
 	      view.setKeepScreenOn(true);
@@ -183,9 +178,7 @@ make increments larger on other for loops
 	      // initalize Coords
 	      head = 0;
 	      tail = 1;
-//	      delayLength = 2;
-//	      delayLength = 10;
-	      delayLength = 40;
+	      delayLength = 40;	//	10
 	      delay  = new CameraCoord[delayLength];
 	      for(int i = 0; i<delayLength; i++){
 	    	  delay[i] = new CameraCoord(0f,0f,0f,0f,0f,0f,0f,0f,0f);
@@ -198,6 +191,7 @@ make increments larger on other for loops
 	      yIntercept = -0.002f;
 	      numberOfContents = 2;
 	      pitchMessage = "";
+	      drawableThreshold = 0.1f;
 	}
 
 	@Override
@@ -229,9 +223,8 @@ make increments larger on other for loops
 		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT);
 
 		// Set the camera position (View matrix)
-		//Log.v(TAG, "Matrix.setLookAtM(mVMatrix, 0, cameraX:" + cameraX+ ",cameraY:" + cameraY + ",cameraZ:" + cameraZ + ",lookX:"+ lookX + ",lookY:" + lookY + ",lookZ:" + lookZ + ")");
+		Log.v(TAG, "Matrix.setLookAtM(mVMatrix, 0, cameraX:" + cameraX+ ",cameraY:" + cameraY + ",cameraZ:" + cameraZ + ",lookX:"+ lookX + ",lookY:" + lookY + ",lookZ:" + lookZ + ")");
 		CameraCoord cameraCoord = readMeasurements();
-//		Matrix.setLookAtM(mVMatrix, 0, cameraX, cameraY, cameraZ, lookX, lookY, lookZ, 0f, 1f, 0f);
 	    Matrix.setLookAtM(mVMatrix, 0, cameraCoord.cameraX, cameraCoord.cameraY, cameraCoord.cameraZ, cameraCoord.lookX, cameraCoord.lookY, cameraCoord.lookZ, cameraCoord.upX, cameraCoord.upY, cameraCoord.upZ);
 
 		// Calculate the projection and view transformation
@@ -296,7 +289,7 @@ make increments larger on other for loops
 	}
 
 	private void updateYaw() {
-	   //Log.v(TAG, "updateYaw: mDx" + mDx + "Original Angle [Degrees]:" +Math.toDegrees(mDx) +" New Angle [Degrees]:" +Math.toDegrees(mDx * yawKludge));
+	   Log.v(TAG, "updateYaw: mDx" + mDx + "Original Angle [Degrees]:" +Math.toDegrees(mDx) +" New Angle [Degrees]:" +Math.toDegrees(mDx * yawKludge));
 		yaw += (mDx * yawKludge);
 	}
 
@@ -310,28 +303,28 @@ make increments larger on other for loops
 
 	private void updateDirection() {	  
 
-		//Log.v(TAG, "updateDirection() - original -  yaw:"+yaw +" pitch:" +pitch +" directionX:" + directionX + " directionY:"+ directionY +" directionZ:"+directionZ);
+		Log.v(TAG, "updateDirection() - original -  yaw:"+yaw +" pitch:" +pitch +" directionX:" + directionX + " directionY:"+ directionY +" directionZ:"+directionZ);
 		directionX = 0f;
 		directionY = 0f;
 		directionZ = 1.0f;
 		rotateX();
 		rotateY();
 		
-		//Log.v(TAG, "updateDirection() - complete - yaw:"+yaw +" pitch:" +pitch +" directionX:" + directionX + " directionY:"+ directionY +" directionZ:"+directionZ);
+		Log.v(TAG, "updateDirection() - complete - yaw:"+yaw +" pitch:" +pitch +" directionX:" + directionX + " directionY:"+ directionY +" directionZ:"+directionZ);
 	}
 	
 	private void rotateX(){
 	   
-		//Log.v(TAG, "rotateX() pitch:" +pitch +" yaw:" +yaw +" Y: directionX:"+directionX +" (directionY:"+directionY +" * Math.cos(pitch):"+Math.cos(pitch) +") + (directionZ:"+directionZ + "* Math.sin(pitch):"+Math.sin(pitch ) +" : "+( (directionY * Math.cos(pitch)) + (directionZ * Math.sin(pitch))));
-		//Log.v(TAG, "rotateX() pitch:" +pitch +" yaw:" +yaw +"  Z: directionX:"+directionX +" (-directionY:"+directionY +" * Math.sin(pitch):"+Math.sin(pitch) +") + (directionZ:"+directionZ + "* Math.cos(pitch):"+Math.cos(pitch ) +" : "+( (-directionY * Math.sin(pitch)) + (directionZ * Math.cos(pitch)))  );
+		Log.v(TAG, "rotateX() pitch:" +pitch +" yaw:" +yaw +" Y: directionX:"+directionX +" (directionY:"+directionY +" * Math.cos(pitch):"+Math.cos(pitch) +") + (directionZ:"+directionZ + "* Math.sin(pitch):"+Math.sin(pitch ) +" : "+( (directionY * Math.cos(pitch)) + (directionZ * Math.sin(pitch))));
+		Log.v(TAG, "rotateX() pitch:" +pitch +" yaw:" +yaw +"  Z: directionX:"+directionX +" (-directionY:"+directionY +" * Math.sin(pitch):"+Math.sin(pitch) +") + (directionZ:"+directionZ + "* Math.cos(pitch):"+Math.cos(pitch ) +" : "+( (-directionY * Math.sin(pitch)) + (directionZ * Math.cos(pitch)))  );
 		
 		directionY = (float) ( (directionY * Math.cos(pitch)) + (directionZ * Math.sin(pitch)));  
 		directionZ = (float) ( (-directionY * Math.sin(pitch)) + (directionZ * Math.cos(pitch)) );
 	}
 	
 	private void rotateY(){
-	   //Log.v(TAG, "rotateY()  pitch:" +pitch +" yaw:" +yaw +" X: directionY:"+directionY +" (directionX:"+directionX +" * Math.cos(yaw):"+Math.cos(yaw) +") + (directionZ:"+directionZ + "* Math.sin(yaw):"+Math.sin(yaw) +" : "+( (directionX * Math.cos(yaw)) + (directionZ * Math.sin(yaw)))  );
-	   //Log.v(TAG, "rotateY()  pitch:" +pitch +" yaw:" +yaw +" Z: directionY:"+directionY +" (-directionX:"+directionX +" * Math.sin(yaw):"+Math.sin(yaw) +") + (directionZ:"+directionZ + "* Math.cos(yaw):"+Math.cos(yaw) +" : "+( (-directionX * Math.sin(yaw)) + (directionZ * Math.cos(yaw)))  );
+	   Log.v(TAG, "rotateY()  pitch:" +pitch +" yaw:" +yaw +" X: directionY:"+directionY +" (directionX:"+directionX +" * Math.cos(yaw):"+Math.cos(yaw) +") + (directionZ:"+directionZ + "* Math.sin(yaw):"+Math.sin(yaw) +" : "+( (directionX * Math.cos(yaw)) + (directionZ * Math.sin(yaw)))  );
+	   Log.v(TAG, "rotateY()  pitch:" +pitch +" yaw:" +yaw +" Z: directionY:"+directionY +" (-directionX:"+directionX +" * Math.sin(yaw):"+Math.sin(yaw) +") + (directionZ:"+directionZ + "* Math.cos(yaw):"+Math.cos(yaw) +" : "+( (-directionX * Math.sin(yaw)) + (directionZ * Math.cos(yaw)))  );
 		
 	   directionX = (float) ( (directionX * Math.cos(yaw))  + (directionZ * Math.sin(yaw)) );
 		//directionY = directionY;	no change
@@ -344,9 +337,9 @@ make increments larger on other for loops
 	 */
 	private void updateCameraPosition() {
 
-		//Log.v(TAG, "updateCameraPosition() cameraX:"+ (cameraX + (directionX * cameraSpeed)) + " = cameraX"+ cameraX + " + (directionX * cameraSpeed): (" + directionX+ "*" + cameraSpeed + ")[" + (directionX * cameraSpeed) + "]");
-		//Log.v(TAG, "updateCameraPosition() cameraY:"+ (cameraY + (directionY * cameraSpeed)) + " = cameraY"+ cameraY + " + (directionY * cameraSpeed): (" + directionY+ "*" + cameraSpeed + ")[" + (directionY * cameraSpeed) + "]");
-		//Log.v(TAG, "updateCameraPosition() cameraZ:"+ (cameraZ + (directionZ * cameraSpeed)) + " = cameraZ"+ cameraZ + " + (directionZ * cameraSpeed): (" + directionZ+ "*" + cameraSpeed + ")[" + (directionZ * cameraSpeed) + "]");
+		Log.v(TAG, "updateCameraPosition() cameraX:"+ (cameraX + (directionX * cameraSpeed)) + " = cameraX"+ cameraX + " + (directionX * cameraSpeed): (" + directionX+ "*" + cameraSpeed + ")[" + (directionX * cameraSpeed) + "]");
+		Log.v(TAG, "updateCameraPosition() cameraY:"+ (cameraY + (directionY * cameraSpeed)) + " = cameraY"+ cameraY + " + (directionY * cameraSpeed): (" + directionY+ "*" + cameraSpeed + ")[" + (directionY * cameraSpeed) + "]");
+		Log.v(TAG, "updateCameraPosition() cameraZ:"+ (cameraZ + (directionZ * cameraSpeed)) + " = cameraZ"+ cameraZ + " + (directionZ * cameraSpeed): (" + directionZ+ "*" + cameraSpeed + ")[" + (directionZ * cameraSpeed) + "]");
 		
 		cameraX = cameraX + (directionX * cameraSpeed);
 		cameraY = cameraY + (directionY * cameraSpeed);
@@ -358,9 +351,9 @@ make increments larger on other for loops
 	 */
 	private void updateLookAt() {
 		
-		//Log.v(TAG, "updateLookAt() lookX=" + (cameraX + directionX)+ " cameraX:" + cameraX + " directionX:" + directionX);
-		//Log.v(TAG, "updateLookAt() lookY=" + (cameraY + directionY)+ " cameraY:" + cameraY + " directionY:" + directionY);
-		//Log.v(TAG, "updateLookAt() lookZ=" + (cameraZ + directionZ)+ " cameraZ:" + cameraZ + " directionZ:" + directionZ);
+		Log.v(TAG, "updateLookAt() lookX=" + (cameraX + directionX)+ " cameraX:" + cameraX + " directionX:" + directionX);
+		Log.v(TAG, "updateLookAt() lookY=" + (cameraY + directionY)+ " cameraY:" + cameraY + " directionY:" + directionY);
+		Log.v(TAG, "updateLookAt() lookZ=" + (cameraZ + directionZ)+ " cameraZ:" + cameraZ + " directionZ:" + directionZ);
 		
 		lookX = cameraX + directionX;
 		lookY = cameraY + directionY;
@@ -370,14 +363,7 @@ make increments larger on other for loops
 	
 	private void initialPlanePosition(){
 		planeX = lookX;
-//		planeY = lookY * 1.20f;
-//		planeY = 1.0f;
-//		planeY = lookY;
 		planeY = lookY * .75f;
-//		planeY = cameraY;
-//		planeY = 0f;
-//		planeZ = (lookZ + cameraZ)/2.0f;
-//		planeZ = lookZ * 1.10f;
 		planeZ = lookZ + .75f;		
 	}
 	
@@ -387,10 +373,29 @@ make increments larger on other for loops
 		planeY += (directionY * cameraSpeed);
 		planeZ += (directionZ * cameraSpeed);
 		
+		updateVents();
+		
 		if(detectCollision()){
 			resetCamera();
 		}
-		Log.d(TAG, "updatePlanePosition() planeX:"+planeX+" planeY:"+planeY +" planeZ:"+planeZ);
+		Log.v(TAG, "updatePlanePosition() planeX:"+planeX+" planeY:"+planeY +" planeZ:"+planeZ);
+	}
+	
+	//TODO make this more oo
+	private void updateVents(){
+		
+		for(Contents contents : this.hallManager.getContents()){
+			for(Coord coord : contents.getMapCoordToDrawable().keySet()){
+				if( planeZ >( coord.getZ() - drawableThreshold) 
+						&& planeZ < ( coord.getZ() + drawableThreshold ) ){
+					Log.i(TAG, "updateVents() - intercepted vent:"+coord.getZ() +" planeZ:"+planeZ);
+					pitchMessage = " VENTS!!!!!!!!!!!!!!!!!!!!!!!!!";
+					planeY = planeY * 1.13f;
+				}else{
+					Log.i(TAG, "updateVents() - NO vent:"+coord.getZ() +" planeZ:"+planeZ);
+				}
+			}
+		}
 	}
 	
 	private boolean detectCollision(){
@@ -423,7 +428,7 @@ make increments larger on other for loops
 	}
 
 	public void setmDx(float mDx) {
-		//Log.v(TAG, "setmDx() oldDmx:" + this.mDx + " new mDx:" + mDx);
+		Log.v(TAG, "setmDx() oldDmx:" + this.mDx + " new mDx:" + mDx);
 		this.mDx = mDx;
 		this.updateYaw();
 	}
@@ -431,7 +436,6 @@ make increments larger on other for loops
 	public void filtermDx(float mDx){
 		float alpha = 0.8f;
 		float tmp;
-//		tmp = (alpha * this.mDx) + [1.0f - alpha] * mDx;
 		tmp = (alpha * this.mDx) + (1.0f - alpha) * mDx;
 //		see if this works, if not create a float[] to track last 5 values and then do a wieghted sum to get current mDx
 	}
@@ -439,7 +443,6 @@ make increments larger on other for loops
 	public void filtermDy(float mDy){
 		float alpha = 0.8f;
 		float tmp;
-//		tmp = (alpha * this.mDx) + [1.0f - alpha] * mDx;
 		tmp = (alpha * this.mDy) + (1.0f - alpha) * mDy;
 	
 	}
@@ -509,7 +512,6 @@ make increments larger on other for loops
  
        // Draw Ground
          plane.draw(finalWallMatrix);         
-//       ground.draw(finalWallMatrix);		
 	}
 
 	protected void updateGravity(){
@@ -532,21 +534,6 @@ make increments larger on other for loops
 			pitchMessage = "No Speed Change";
 		}
 	}
-	
-	/*
-	protected void setTilt(){
-		calculate min speed off of current pitch
-		next calc new pitch based on delta of cameraSpeed and MinSpeed
-		//	y = mx + b
-		//	y2 = minSpeed - cameraSpeed + offset
-		float y = cameraSpeed + cameraSpeedOffset;
-		float currentY = (float) Math.sin(pitch);
-		if(cameraSpeed < minimumSpeed){
-			
-		}
-
-	}
-	*/
 	
 	protected void setTilt(){
 
@@ -580,14 +567,13 @@ make increments larger on other for loops
 		  linear_acceleration[0] = event.values[0] - gravity[0];
 		  linear_acceleration[1] = event.values[1] - gravity[1];
 		  linear_acceleration[2] = event.values[2] - gravity[2];
-		  /*
-		  Log.v(TAG, "onSensorChanged() - "+" linear_acceleration[0]:"+linear_acceleration[0] + " gravity[0]:"+gravity[0] +" event.values[0]:" +event.values[0] 
-				  	+" linear_acceleration[1]:"+linear_acceleration[1] + " gravity[1]:"+gravity[1] +" event.values[1]:" +event.values[1]
-				  	+" linear_acceleration[2]:"+linear_acceleration[2] + " gravity[2]:"+gravity[2] +" event.values[2]:" +event.values[2]);.
-				  	*/
-		  /* forward backward front back tilt*/Log.v(TAG, "onSensorChanged() - linear_acceleration[0]:"+linear_acceleration[0] + " gravity[0]:"+gravity[0] +" event.values[0]:" +event.values[0]);
-		  /*side to side side to side tilt */Log.v(TAG, "onSensorChanged() - linear_acceleration[1]:"+linear_acceleration[1] + " gravity[1]:"+gravity[1] +" event.values[1]:" +event.values[1]);
-		  /* up down fronttilt maby*/Log.v(TAG, "onSensorChanged() - linear_acceleration[2]:"+linear_acceleration[2] + " gravity[2]:"+gravity[2] +" event.values[2]:" +event.values[2]);
+	
+		  /* forward backward front back tilt*/
+		  Log.v(TAG, "onSensorChanged() - linear_acceleration[0]:"+linear_acceleration[0] + " gravity[0]:"+gravity[0] +" event.values[0]:" +event.values[0]);
+		  /*side to side side to side tilt */
+		  Log.v(TAG, "onSensorChanged() - linear_acceleration[1]:"+linear_acceleration[1] + " gravity[1]:"+gravity[1] +" event.values[1]:" +event.values[1]);
+		  /* up down fronttilt maby*/
+		  Log.v(TAG, "onSensorChanged() - linear_acceleration[2]:"+linear_acceleration[2] + " gravity[2]:"+gravity[2] +" event.values[2]:" +event.values[2]);
 		  
 		//	set yaw
 		setmDx(linear_acceleration[1] * .90f);
@@ -655,13 +641,13 @@ make increments larger on other for loops
 		// Adjust the viewport based on geometry changes,
 		// such as screen rotation
 		GLES20.glViewport(0, 0, width, height);
-		//Log.v(TAG, "onSurfaceChanged width:" + width + " height:" + height +" ratio:"+((float) width / height));
+		Log.v(TAG, "onSurfaceChanged width:" + width + " height:" + height +" ratio:"+((float) width / height));
 		float ratio = (float) width / height;
 		// this projection matrix is applied to object coordinates
 		// in the onDrawFrame() method
 		// Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 3, 1000);
 		Matrix.frustumM(mProjMatrix, 0, -ratio / 3.0f, ratio / 3.0f,-1.0f / 3.0f, 1.0f / 3.0f, 1, 1000);
-		//Log.v(TAG, "Matrix.frustumM(mProjMatrix, " + 0 + "," + -ratio / 3.0f+ "," + ratio / 3.0f + "," + -1.0f / 3.0f + "," + 1.0f / 3.0f+ "," + 1 + "," + 1000);
+		Log.v(TAG, "Matrix.frustumM(mProjMatrix, " + 0 + "," + -ratio / 3.0f+ "," + ratio / 3.0f + "," + -1.0f / 3.0f + "," + 1.0f / 3.0f+ "," + 1 + "," + 1000);
 
 	}
 

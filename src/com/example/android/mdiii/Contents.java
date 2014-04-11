@@ -16,7 +16,7 @@ import android.util.Log;
 public class Contents {
 
 	private HallManager hallManager;
-	private Map<Coord, Drawable> map;
+	private Map<Coord, Drawable> mapCoordToDrawable;
 	private Ground ground;
 	private static float padding = 0.1f;
 	private static float lookAhead = 2.0f;
@@ -32,7 +32,7 @@ public class Contents {
 		super();
 		Log.v(TAG, "Contents()");
 		this.hallManager = hallManager;
-		this.map = map;
+		this.mapCoordToDrawable = map;
 		this.objectMatrix = objectMatrix;
 		this.mMVPMatrix = mMVPMatrix;
 		this.finalWallMatrix = finalWallMatrix;
@@ -43,7 +43,7 @@ public class Contents {
 /*
 	public void draw(Coord coord){
 		Log.v(TAG, "draw("+coord+")");
-		for(Map.Entry<Coord, Drawable> entry : map.entrySet()){
+		for(Map.Entry<Coord, Drawable> entry : mapCoordToDrawable.entrySet()){
 		//	fix this if
 			if(entry.getKey().getZ() < coord.getZ() + padding){
 				Log.v(TAG, "draw("+coord+") time to draw:"+entry.getKey().getZ() +" padding:"+padding +" coords:" +coord);
@@ -85,16 +85,19 @@ public class Contents {
 		        Matrix.multiplyMM(finalWallMatrix, 0, mMVPMatrix, 0,objectMatrix, 0);
 		        
 		        Log.v(TAG, "drawing entity:"+ground);
-//		        ground.draw(finalWallMatrix);
 		        drawable.draw(finalWallMatrix);
-				
 	}
 	
 	public void draw(){
 		Log.v(TAG, "draw()");
-		for(Entry<Coord, Drawable> entry : map.entrySet()){
+		for(Entry<Coord, Drawable> entry : mapCoordToDrawable.entrySet()){
 			this.draw(entry.getKey(), entry.getValue());
 		}
+	}
+
+
+	public Map<Coord, Drawable> getMapCoordToDrawable() {
+		return mapCoordToDrawable;
 	}
 	
 	
