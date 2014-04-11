@@ -1,0 +1,450 @@
+package com.example.android.mdiii;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
+
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
+import android.util.Log;
+
+public class MyGLRenderer implements GLSurfaceView.Renderer {
+	/*
+	 * fix z effect move near view closer make airplane look more like an
+	 * airplane work on next homework
+	 */
+   
+//   look at is too close to camera?  should lookatZ be much bigger?
+//   is adding 2.0 to Z the way to go?
+	private enum Side{
+		LEFT,RIGHT,TOP,BOTTOM
+	}
+	private static final String TAG = "MyGLRenderer";
+	private Triangle mTriangle;
+	private Ground ground;
+	private Ground plane;
+	private GLSurfaceView view;
+	private int verticalPadding;
+	private int horizontalPadding;
+	private int paddingPercent;
+	private int triangleX;
+	private int triangleZ;
+	private int groundX;
+	private int groundZ;
+	private long currentTime;
+	private long delay;
+	// private float x;
+	// private float y;
+	public float xDeltaThreshold;
+	public float yDeltaThreshold;
+	public volatile float mDx;
+	public volatile float mDy;
+	private float xSpeed = 0.03f;
+	private float ySpeed = 0.03f;
+	private float bound = 0.70f;
+	private float cameraSpeed;
+	private float yawKludge;
+	private float pitchKludge;
+	private float lookX;
+	private float lookY;
+	private float lookZ;
+	private float cameraX;
+	private float cameraY;
+	private float cameraZ;
+	private float yaw;
+	private float pitch;
+	private float directionX;
+	private float directionY;
+	private float directionZ;
+	private float xUpper;
+	private float xLower;
+	private float yUpper;
+	private float yLower;
+	private float zUpper;
+	private float zLower;
+	private boolean isFirstPass;
+	private float tempgYfloat;
+	private float tempgZfloat;
+	private float wallXOffset;
+
+	private final float[] mMVPMatrix = new float[16];
+	private final float[] mProjMatrix = new float[16];
+	private final float[] mVMatrix = new float[16];
+	private final float[] planeMatrix = new float[16];
+	private final float[] groundMatrix = new float[16];	
+	private final float[] finalMatrix = new float[16];
+	private final float[] rightWallMatrix = new float[16];
+	private final float[] rightWallFinalMatrix = new float[16];
+	private final float[] leftWallMatrix = new float[16];
+	private final float[] leftWallFinalMatrix = new float[16];	
+	
+	private int groundY;
+
+	public MyGLRenderer(GLSurfaceView view) {
+		this.view = view;
+		verticalPadding = view.getHeight() / 10;
+		horizontalPadding = view.getWidth() / 10;
+//		cameraX = -1.0f;
+		cameraX = 0.0f;
+		cameraY = 0f;
+		cameraZ = 4.5f;
+		
+		xDeltaThreshold = 0.1f;	// 20 % change
+		yDeltaThreshold = 0.1f;	// 20 % change
+
+//		lookX = -1.1f;
+		lookX = 0f;
+		lookY = 0f;
+		lookZ = 6.5f;
+
+		triangleX = 18;
+		triangleZ = 18;
+
+		groundX = 10;
+		groundY = 10;
+		groundZ = 100;
+		
+		wallXOffset = 1.0f;
+DO I NEED TO CREATE A UNIT VECTOR? IE NORMALIZE IT?      
+      length = sqrt(x*x + y*y + z*z)
+      directionX  = x/length
+      directionY  = y/length
+      directionz = z/length
+                             
+WHY IS GAME NOT MOVING FORWARD IN THE Z DIRECTION?
+		IS YAW SET RIGHT? 
+				SHOULDN'T YAW BE IN RADIANS? OR 0?
+				WHAT ABOUT THE KLUDGES
+				WHAT ABOUT THE CAMERA SPEED
+		
+		yaw = 90;
+		cameraSpeed = 0.15f;
+		yawKludge = 1.5f;
+		pitchKludge = 1.5f;
+
+		isFirstPass = true;
+	}
+
+	@Override
+	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+
+		// Set the background frame color
+		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
+		GLES20.glDepthMask(true);
+
+		mTriangle = new Triangle();
+		ground = new Ground();
+		plane = new Ground();
+		currentTime = System.currentTimeMillis();
+		delay = 1000;
+	}
+
+	@Override
+	public void onDrawFrame(GL10 unused) {
+//onSurfaceChanged width:1024 height:496 ratio:2.064516
+//Matrix.frustumM(mProjMatrix, 0,-0.68817204,0.68817204,-0.33333334,0.33333334,1,1000
+
+		GLES20.glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
+		GLES20.glClearDepthf(1.0f);
+		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT);
+
+		pauseExecution();
+
+		// Set the camera position (View matrix)
+		Log.d(TAG, "Matrix.setLookAtM(mVMatrix, 0, cameraX:" + cameraX+ ",cameraY:" + cameraY + ",cameraZ:" + cameraZ + ",lookX:"+ lookX + ",lookY:" + lookY + ",lookZ:" + lookZ + ")");
+	    Matrix.setLookAtM(mVMatrix, 0, cameraX, cameraY, cameraZ, lookX,lookY, lookZ, 0f, 1f, 0f);
+
+		// Calculate the projection and view transformation
+		Matrix.multiplyMM(mMVPMatrix, 0, mProjMatrix, 0, mVMatrix, 0);
+
+		drawWall(rightWallMatrix, rightWallFinalMatrix, wallXOffset, true);
+		drawWall(leftWallMatrix, leftWallFinalMatrix, -wallXOffset, false);
+
+	}
+
+	private void drawWall(float[] wallMatrix, float[] finalWallMatrix, float wallXOffset, boolean isRightWall){ 
+
+		for (int gy = -1 * groundY; gy <= groundY; gy++) {
+			for (int gz = (int) zLower; gz <= 20; gz++) {
+
+				float gyFloat = gy / 10.0f;
+				// float gzFloat = gz / 10.0f;
+				float gzFloat = gz;
+				tempgYfloat = gyFloat;
+				tempgZfloat = gzFloat;
+
+				// Set the camera position (View matrix)
+				Matrix.setIdentityM(wallMatrix, 0);
+
+				// move wall alittle
+				Matrix.translateM(wallMatrix, 0, wallXOffset, gyFloat, gzFloat);
+				
+				Matrix.multiplyMM(finalWallMatrix, 0, mMVPMatrix, 0,wallMatrix, 0);
+
+				// Draw Ground
+				ground.draw(finalWallMatrix);
+			}
+		}
+		if(isRightWall){
+			Log.d(TAG, "Matrix.translateM(rightWallMatrix, 0,  gxfloat:" + wallXOffset+ ", gyFloat:" + tempgYfloat + ", gzFloat:" + tempgZfloat+ " )");			
+		}else{
+			Log.d(TAG, "Matrix.translateM(leftWallMatrix, 0,  gxfloat:" + wallXOffset+ ", gyFloat:" + tempgYfloat + ", gzFloat:" + tempgZfloat+ " )");			
+		}
+
+	}
+	
+	private void updateCameraAngle() {
+		yaw += (mDx * yawKludge);
+		Log.d(TAG, "updateCameraAngle: mDx" + mDx + " cameraAngle:"
+				+ yaw);
+		updateDirection();
+		updateCameraPosition();
+		updateLookAt();
+	}
+
+	private void updateCameraPosition() {
+		// C = C + D*cameraDistancePerFrame
+
+		Log.d(TAG, "updateCameraPosition() cameraX:"+ (cameraX + (directionX * cameraSpeed)) + " = cameraX"+ cameraX + " + (directionX * cameraSpeed): (" + directionX+ "*" + cameraSpeed + ")[" + (directionX * cameraSpeed) + "]");
+		Log.d(TAG, "updateCameraPosition() cameraY:"+ (cameraY + (directionY * cameraSpeed)) + " = cameraY"+ cameraY + " + (directionY * cameraSpeed): (" + directionY+ "*" + cameraSpeed + ")[" + (directionY * cameraSpeed) + "]");
+		Log.d(TAG, "updateCameraPosition() cameraZ:"+ (cameraZ + (directionZ * cameraSpeed)) + " = cameraZ"+ cameraZ + " + (directionZ * cameraSpeed): (" + directionZ+ "*" + cameraSpeed + ")[" + (directionZ * cameraSpeed) + "]");
+		cameraX = cameraX + (directionX * cameraSpeed);
+		cameraY = cameraY + (directionY * cameraSpeed);
+		cameraZ = cameraZ + (directionZ * cameraSpeed);
+	}
+
+	private void updateCameraSpeed() {	
+	   /*
+		callthis pitch
+		the camera speed variable stays constant
+		*/
+	   pitch += (mDy * pitchKludge); 
+//		cameraSpeed += mDy * cameraSpeedKludge;
+		Log.d(TAG, "updateCameraSpeed: mDy" + mDy + " cameraSpeed:"+ cameraSpeed);
+	}
+
+	private void updateDirection() {	  
+
+//		directionX = (float) Math.cos(Math.toRadians(pitch)) * (float) Math.sin(Math.toRadians(yaw));
+	   directionX = (float) Math.cos((pitch)) * (float) Math.sin((yaw));
+//	   directionY = (float) Math.sin(Math.toRadians(pitch));
+	   directionY = (float) Math.sin((pitch));
+//	   directionZ = (float) Math.cos(Math.toRadians(pitch)) * (float) Math.cos(Math.toRadians(yaw));
+	   directionZ = (float) Math.cos((pitch)) * (float) Math.cos((yaw));
+		Log.d(TAG, "updateDirectionX:" + directionX + " directionY:"+ directionY +" directionZ:"+directionZ);
+	}
+
+	private void updateLookAt() {
+		// Lookat = C + D
+		Log.d(TAG, "updateLookAt() lookX=" + (cameraX + directionX)+ " cameraX:" + cameraX + " directionX:" + directionX);
+		Log.d(TAG, "updateLookAt() lookY=" + (cameraY + directionY)+ " cameraY:" + cameraY + " directionY:" + directionY);
+		Log.d(TAG, "updateLookAt() lookZ=" + (cameraZ + directionZ)+ " cameraZ:" + cameraZ + " directionZ:" + directionZ);
+		lookX = cameraX + directionX;
+		lookY = cameraY + directionY;
+//		lookZ = cameraZ + directionZ;
+		lookZ = cameraZ + directionZ + 2.0f;
+		
+	}
+
+	@Override
+	public void onSurfaceChanged(GL10 unused, int width, int height) {
+		// Adjust the viewport based on geometry changes,
+		// such as screen rotation
+		GLES20.glViewport(0, 0, width, height);
+		Log.d(TAG, "onSurfaceChanged width:" + width + " height:" + height +" ratio:"+((float) width / height));
+		float ratio = (float) width / height;
+		this.xLower = -ratio / 3.0f;
+		this.xUpper = ratio / 3.0f;
+		this.yLower = -1.0f / 3.0f;
+		this.yUpper = 1.0f / 3.0f;
+		this.zLower = 1;
+		this.zUpper = 1000;
+		// this projection matrix is applied to object coordinates
+		// in the onDrawFrame() method
+		// Matrix.frustumM(mProjMatrix, 0, -ratio, ratio, -1, 1, 3, 1000);
+		Matrix.frustumM(mProjMatrix, 0, -ratio / 3.0f, ratio / 3.0f,-1.0f / 3.0f, 1.0f / 3.0f, 1, 1000);
+		Log.d(TAG, "Matrix.frustumM(mProjMatrix, " + 0 + "," + -ratio / 3.0f+ "," + ratio / 3.0f + "," + -1.0f / 3.0f + "," + 1.0f / 3.0f+ "," + 1 + "," + 1000);
+
+	}
+
+	public static int loadShader(int type, String shaderCode) {
+
+		// create a vertex shader type (GLES20.GL_VERTEX_SHADER)
+		// or a fragment shader type (GLES20.GL_FRAGMENT_SHADER)
+		int shader = GLES20.glCreateShader(type);
+
+		// add the source code to the shader and compile it
+		GLES20.glShaderSource(shader, shaderCode);
+		GLES20.glCompileShader(shader);
+
+		return shader;
+	}
+
+	private void pauseExecution() {
+		long now = System.currentTimeMillis();
+
+		if ((now - currentTime) >= delay) {
+			// Log.d(TAG, "elapsed time:"+delay);
+
+		} else {
+			// Log.d(TAG, "Not ready.  elapsed time:"+delay);
+		}
+		currentTime = now;
+
+		try {
+			Thread.sleep(250);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * Utility method for debugging OpenGL calls. Provide the name of the call
+	 * just after making it:
+	 * 
+	 * <pre>
+	 * mColorHandle = GLES20.glGetUniformLocation(mProgram, &quot;vColor&quot;);
+	 * MyGLRenderer.checkGlError(&quot;glGetUniformLocation&quot;);
+	 * </pre>
+	 * 
+	 * If the operation is not successful, the check throws an error.
+	 * 
+	 * @param glOperation
+	 *            - Name of the OpenGL call to check.
+	 */
+	public static void checkGlError(String glOperation) {
+		int error;
+		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+			Log.e(TAG, glOperation + ": glError " + error);
+			throw new RuntimeException(glOperation + ": glError " + error);
+		}
+	}
+
+	public float getmDx() {
+		return mDx;
+	}
+
+	public void setmDx(float mDx) {
+		Log.d(TAG, "setmDx() oldDmx:" + this.mDx + " new mDx:" + mDx);
+		this.mDx = mDx;
+		this.updateCameraAngle();
+	}
+
+	public float getmDy() {
+		return mDy;
+	}
+
+	public void setmDy(float mDy) {
+		Log.d(TAG, "setmDy() oldDmy:" + this.mDy + " new mDy:" + mDy);
+		this.mDy = mDy;
+		this.updateCameraSpeed();
+	}
+}
+
+class Triangle {
+
+	private final String vertexShaderCode =
+	// This matrix member variable provides a hook to manipulate
+	// the coordinates of the objects that use this vertex shader
+	"uniform mat4 uMVPMatrix;" +
+
+	"attribute vec4 vPosition;" + "void main() {" +
+	// the matrix must be included as a modifier of gl_Position
+			"  gl_Position = uMVPMatrix * vPosition;" + "}";
+
+	private final String fragmentShaderCode = "precision mediump float;"
+			+ "uniform vec4 vColor;" + "void main() {"
+			+ "  gl_FragColor = vColor;" + "}";
+
+	private final FloatBuffer vertexBuffer;
+	private final int mProgram;
+	private int mPositionHandle;
+	private int mColorHandle;
+	private int mMVPMatrixHandle;
+
+	// number of coordinates per vertex in this array
+	static final int COORDS_PER_VERTEX = 3;
+	static float triangleCoords[] = { // in counterclockwise order:
+	0.0f, 0.622008459f, 0.0f, // top
+			-0.5f, -0.311004243f, 0.0f, // bottom left
+			0.5f, -0.311004243f, 0.0f // bottom right
+	};
+	private final int vertexCount = triangleCoords.length / COORDS_PER_VERTEX;
+	private final int vertexStride = COORDS_PER_VERTEX * 4; // bytes per vertex
+
+	// Set color with red, green, blue and alpha (opacity) values
+	// float color[] = { 0.63671875f, 0.76953125f, 0.22265625f, 1.0f };
+	float color[] = { 1.0f, 0.0f, 0.0f, 1.0f };
+
+	public Triangle() {
+		// initialize vertex byte buffer for shape coordinates
+		ByteBuffer bb = ByteBuffer.allocateDirect(
+		// (number of coordinate values * 4 bytes per float)
+				triangleCoords.length * 4);
+		// use the device hardware's native byte order
+		bb.order(ByteOrder.nativeOrder());
+
+		// create a floating point buffer from the ByteBuffer
+		vertexBuffer = bb.asFloatBuffer();
+		// add the coordinates to the FloatBuffer
+		vertexBuffer.put(triangleCoords);
+		// set the buffer to read the first coordinate
+		vertexBuffer.position(0);
+
+		// prepare shaders and OpenGL program
+		int vertexShader = MyGLRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
+				vertexShaderCode);
+		int fragmentShader = MyGLRenderer.loadShader(GLES20.GL_FRAGMENT_SHADER,
+				fragmentShaderCode);
+
+		mProgram = GLES20.glCreateProgram(); // create empty OpenGL Program
+		GLES20.glAttachShader(mProgram, vertexShader); // add the vertex shader
+														// to program
+		GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment
+															// shader to program
+		GLES20.glLinkProgram(mProgram); // create OpenGL program executables
+
+	}
+
+	public void draw(float[] mvpMatrix) {
+		// Add program to OpenGL environment
+		GLES20.glUseProgram(mProgram);
+
+		// get handle to vertex shader's vPosition member
+		mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+
+		// Enable a handle to the triangle vertices
+		GLES20.glEnableVertexAttribArray(mPositionHandle);
+
+		// Prepare the triangle coordinate data
+		GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX,
+				GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
+
+		// get handle to fragment shader's vColor member
+		mColorHandle = GLES20.glGetUniformLocation(mProgram, "vColor");
+
+		// Set color for drawing the triangle
+		GLES20.glUniform4fv(mColorHandle, 1, color, 0);
+
+		// get handle to shape's transformation matrix
+		mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+		MyGLRenderer.checkGlError("glGetUniformLocation");
+
+		// Apply the projection and view transformation
+		GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+		MyGLRenderer.checkGlError("glUniformMatrix4fv");
+
+		// Draw the triangle
+		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, vertexCount);
+
+		// Disable vertex array
+		GLES20.glDisableVertexAttribArray(mPositionHandle);
+	}
+}
