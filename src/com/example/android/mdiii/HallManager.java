@@ -86,14 +86,14 @@ public class HallManager {
 		hallMinLength = 10.0f;
 		deltaZMinimum = 1.0f;
 		interactiveObjectMap = new HashMap<Coord, Drawable>();
-		////Log.v(TAG, "HallManager(numberOfHalls:"+this.numberOfHalls +" endgap:" +endPadding +" hallgap:"+hallGap +"startX:"+this.startX +" endX:"+this.endX +"startY:"+this.startY +" endY:"+this.endY+"startZ:"+this.startZ +" endZ:"+this.endZ);
+		Log.v(TAG, "HallManager(numberOfHalls:"+this.numberOfHalls +" endgap:" +endPadding +" hallgap:"+hallGap +"startX:"+this.startX +" endX:"+this.endX +"startY:"+this.startY +" endY:"+this.endY+"startZ:"+this.startZ +" endZ:"+this.endZ);
 		init();
 	}
 
 
 	private void init(){
 		float hallLength = (endZ - startZ)/numberOfHalls;
-		////Log.v(TAG, "init() halllength"+hallLength);
+		Log.v(TAG, "init() halllength"+hallLength);
 		this.halls = new Hall[numberOfHalls];
 		
 		contentsMap = new HashMap<Coord, Drawable>();
@@ -134,21 +134,21 @@ public class HallManager {
 		
 				boolean drawGood = halls[i].drawHallContents(currentZ);
 				if(drawGood){
-					////Log.v(TAG, "draw() - GOOD! hallIndex:"+i +" currentZ:"+currentZ);
+					Log.v(TAG, "draw() - GOOD! hallIndex:"+i +" currentZ:"+currentZ);
 	//			if(halls[i].draw(currentZ)){
 					results = true;
 					break;
 				}else{
-					////Log.v(TAG, "draw() - BAD! hallIndex:"+i +" currentZ:"+currentZ); 
+					Log.v(TAG, "draw() - BAD! hallIndex:"+i +" currentZ:"+currentZ); 
 				}
 					
 			}
 			
 			if(results){
-				Log.v(TAG, "try drawing contents....");
+				Log.d(TAG, "try drawing contents....");
 				drawContents();
 			}
-			////Log.v(TAG, "draw("+currentZ +") DID NOT DRAW!!");
+			Log.v(TAG, "draw("+currentZ +") DID NOT DRAW!!");
 			return results;
 			}else{
 				return false;
@@ -173,7 +173,7 @@ public class HallManager {
       int startZ = (int) (this.startZ * 10.0f) ; 
       int endY = (int) (this.endY * 10.0f) ;
       int endZ = (int) ( (currentZ + HallManager.this.endPadding) * 10.0f) ;
-      //Log.v(TAG, "drawEndlessVerticalWall: currentZ:" +currentZ +" lastZ:" +lastZ +" deltaZMinimum:" +deltaZMinimum +" firstWallsdrawn:" +firstWallsdrawn +" startY:" +startY +" endY:"+endY +" startZ:"+startZ +" endZ:"+endZ +" gap:"+HallManager.this.hallGap +" HallManager.this.endPadding:"+HallManager.this.endPadding);               
+      Log.v(TAG, "drawEndlessVerticalWall: currentZ:" +currentZ +" lastZ:" +lastZ +" deltaZMinimum:" +deltaZMinimum +" firstWallsdrawn:" +firstWallsdrawn +" startY:" +startY +" endY:"+endY +" startZ:"+startZ +" endZ:"+endZ +" gap:"+HallManager.this.hallGap +" HallManager.this.endPadding:"+HallManager.this.endPadding);               
       for (int gy = startY; gy <= endY; gy+=yIncrement) {
          for (int gz = startZ; gz <= endZ; gz+=zIncrement) {
 
@@ -182,14 +182,14 @@ public class HallManager {
             tempgYfloat = gyFloat;
             tempgZfloat = gzFloat;
 
-//	          //Log.v(TAG, "drawWall:gz:"+gz +" gy:"+gy +" gyFloat:"+gyFloat +" gzFloat:"+gzFloat +" wallXOffset:"+wallXOffset);
+//	          Log.v(TAG, "drawWall:gz:"+gz +" gy:"+gy +" gyFloat:"+gyFloat +" gzFloat:"+gzFloat +" wallXOffset:"+wallXOffset);
             
             // Set the camera position (View matrix)
             Matrix.setIdentityM(wallMatrix, 0);
 
             // move wall alittle
             Matrix.translateM(wallMatrix, 0, wallOffset, gyFloat, gzFloat);
-            //Log.v(TAG, "Matrix.translateM(objectMatrix, 0,  gxfloat:" + wallOffset+ ", gyFloat:" + tempgYfloat + ", gzFloat:" + tempgZfloat+ " )");              
+            Log.v(TAG, "Matrix.translateM(objectMatrix, 0,  gxfloat:" + wallOffset+ ", gyFloat:" + tempgYfloat + ", gzFloat:" + tempgZfloat+ " )");              
             Matrix.multiplyMM(finalWallMatrix, 0, mMVPMatrix, 0,wallMatrix, 0);
             
             // Draw Wall
@@ -209,7 +209,7 @@ public class HallManager {
       int endX = (int) (this.endX * 10.0f) ;
       int startZ = (int) (this.startZ * 10.0f) ;       
       int endZ = (int) ( (currentZ + HallManager.this.endPadding) * 10.0f) ;     
-      //Log.v(TAG, "drawEndlessHorizontalWall: currentZ:" +currentZ +" lastZ:" +lastZ +" deltaZMinimum:" +deltaZMinimum +" firstWallsdrawn:" +firstWallsdrawn +" startX:" +startX +" endX:"+endX +" startZ:"+startZ +" endZ:"+endZ +" gap:"+HallManager.this.hallGap +" HallManager.this.endPadding:"+HallManager.this.endPadding);               
+      Log.v(TAG, "drawEndlessHorizontalWall: currentZ:" +currentZ +" lastZ:" +lastZ +" deltaZMinimum:" +deltaZMinimum +" firstWallsdrawn:" +firstWallsdrawn +" startX:" +startX +" endX:"+endX +" startZ:"+startZ +" endZ:"+endZ +" gap:"+HallManager.this.hallGap +" HallManager.this.endPadding:"+HallManager.this.endPadding);               
       for (int gx = startX; gx <= endX; gx+=xIncrement) {   
     	  for (int gz = startZ; gz <= endZ; gz+=zIncrement) {
 
@@ -218,14 +218,14 @@ public class HallManager {
 	        tempgXfloat = gxFloat;
 	        tempgZfloat = gzFloat;     
 	
-	//		          //Log.v(TAG, "drawWall:gz:"+gz +" gy:"+gy +" gyFloat:"+gyFloat +" gzFloat:"+gzFloat +" wallXOffset:"+wallXOffset);
+	//		          Log.v(TAG, "drawWall:gz:"+gz +" gy:"+gy +" gyFloat:"+gyFloat +" gzFloat:"+gzFloat +" wallXOffset:"+wallXOffset);
 	        
 	        // Set the camera position (View matrix)
 	        Matrix.setIdentityM(wallMatrix, 0);
 	
 	        // move wall alittle
 	        Matrix.translateM(wallMatrix, 0,  gxFloat, wallOffset, gzFloat);
-	        //Log.v(TAG, "Matrix.translateM(objectMatrix, 0,  gxfloat:" + tempgXfloat+ ", gyFloat:" + wallOffset + ", gzFloat:" + tempgZfloat+ " )");              
+	        Log.v(TAG, "Matrix.translateM(objectMatrix, 0,  gxfloat:" + tempgXfloat+ ", gyFloat:" + wallOffset + ", gzFloat:" + tempgZfloat+ " )");              
 	        Matrix.multiplyMM(finalWallMatrix, 0, mMVPMatrix, 0,wallMatrix, 0);
 	        
 	        // Draw Ground
@@ -233,7 +233,7 @@ public class HallManager {
 	     }
 	  }
       
-      Log.v(TAG, "draw contents for real");
+      Log.d(TAG, "draw contents for real");
 //      contents.draw(new Coord(tempgXfloat, tempgYfloat, tempgZfloat));
 	  lastZ = hallMinLength;
 	  firstWallsdrawn = true;
@@ -265,7 +265,7 @@ public class HallManager {
 		this.endY = endY;
 		this.startX = startX;
 		this.endX = endX;
-		////Log.v(TAG, "Hall(startX:"+this.startX +" endX:"+this.endX +"startY:"+this.startY +" endY:"+this.endY+"startZ:"+this.startZ +" endZ:"+this.endZ);
+		Log.v(TAG, "Hall(startX:"+this.startX +" endX:"+this.endX +"startY:"+this.startY +" endY:"+this.endY+"startZ:"+this.startZ +" endZ:"+this.endZ);
 	}
 
 	protected boolean drawHallContents(float currentZ){
