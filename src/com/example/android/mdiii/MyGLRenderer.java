@@ -1,6 +1,6 @@
-update they way the plane points
-
+work on drawing matrix
 /*
+ * update they way the plane points
  * do the vent lift thing
 diff with old project and do clean up
 setup z correctly
