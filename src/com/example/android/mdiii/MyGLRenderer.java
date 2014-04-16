@@ -1,4 +1,4 @@
-work on drawing matrix
+//work on drawing matrix
 /*
  * update they way the plane points
  * do the vent lift thing
@@ -486,14 +486,7 @@ work on plane rotation and text stuff
  
         //   Move the Object of interest on the Screen
          Matrix.translateM(wallMatrix, 0,  planeX, planeY, planeZ);
-/*         
-         //	pitch
-         Matrix.rotateM(wallMatrix, 0, pitch * -85.0f, 1, 0, 0);         
-         //	roll
-         Matrix.rotateM(wallMatrix, 0, (yaw * 50.0f), 0, 0, 1);
-         //	yaw
-         Matrix.rotateM(wallMatrix, 0, (yaw * -80.0f), 0, 1, 0);
-*/
+
          //	roll
          Matrix.rotateM(rotationMatrix, 0, (yaw * 70.0f), 0, 0, 1);
          

@@ -91,6 +91,8 @@ public class Contents {
 	public void draw(){
 		Log.v(TAG, "draw()");
 		for(Entry<Coord, Drawable> entry : mapCoordToDrawable.entrySet()){
+			if the drawable is of type ground use theh draw method in this class
+			if the drawable is of type Fan then use the draw method in fan
 			this.draw(entry.getKey(), entry.getValue());
 		}
 	}
