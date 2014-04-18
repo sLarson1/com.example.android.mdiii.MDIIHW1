@@ -49,6 +49,8 @@ public class HallManager {
 	private float wallYOffset;
 	private Hall[] halls;
 	private Hall currentHall;
+	private float currentHallZ;
+	private int currentHallIndex;
 	private int numberOfHalls;
 	private float hallGap;
 	private float hallMinLength;
@@ -93,15 +95,20 @@ public class HallManager {
 
 	private void init(){
 		float hallLength = (endZ - startZ)/numberOfHalls;
-		Log.v(TAG, "init() halllength"+hallLength);
+		Log.v(TAG, "init() halllength"+hallLength);		
 		this.halls = new Hall[numberOfHalls];
+		currentHallIndex = 0;
+		currentHallZ = 0f;
 		
 		contentsMap = new HashMap<Coord, Drawable>();
-		Coord coord = new Coord(0f, 0f, 12.0f );
+		Coord coord = new Coord(0f, -0.8f, 12.0f );
+		Coord coord2 = new Coord(0f, 0f, 16.0f );
 		Drawable obj = new Ground();
+		Drawable obj2 = new Fan(coord2, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 //		Drawable obj = new Plane();
 		contentsMap.put(coord, obj);
-		contentsMap.put(new Coord( 0f, 0f, 15.0f), new Ground());
+		contentsMap.put(coord2, obj2);
+		contentsMap.put(new Coord( 0f, -0.8f, 20.0f), new Ground());
 		
 		contentsList = new ArrayList<Contents>();
 		contentsList.add(new Contents(this, contentsMap, wallMatrix, mMVPMatrix, finalWallMatrix));
@@ -124,11 +131,13 @@ public class HallManager {
 	
 	
 	protected boolean draw(float currentZ){
-		if (drawEndlessVerticalWall(currentZ, HallManager.this.wallXOffset) 
+		if(true)
+		{
+	/*	if (drawEndlessVerticalWall(currentZ, HallManager.this.wallXOffset) 
 				&& drawEndlessVerticalWall(currentZ, -1.0f * HallManager.this.wallXOffset)
 	            && drawEndlessHorizontalWall(currentZ, HallManager.this.wallYOffset)
 	            && drawEndlessHorizontalWall(currentZ, -1.0f * HallManager.this.wallYOffset)){
-			
+		*/	
 			boolean results = false;
 			// Now draw hall content
 			for(int i = 0; i<this.numberOfHalls ; i++){

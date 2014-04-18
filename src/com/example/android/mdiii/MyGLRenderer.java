@@ -1,3 +1,4 @@
+why isn't the arm being drawn
 //work on drawing matrix
 /*
  * update they way the plane points
@@ -54,7 +55,8 @@ work on plane rotation and text stuff
 
 	private static final String TAG = "MyGLRenderer";
 	private Ground ground;
-	private Plane plane;
+//	private Plane plane;
+	private Ground plane;
 	private GLSurfaceView view;
 	private HallManager hallManager;
 	public float xDeltaThreshold;
@@ -151,7 +153,7 @@ work on plane rotation and text stuff
 		
 
 		yaw = 0f;
-		cameraSpeed = 0.025f;//1.25f;
+		cameraSpeed = 0.020f;//1.25f;
 		yawKludge = 0.01f;
 		pitchKludge = .1f;	
 		collisionDetected = false;
@@ -188,7 +190,7 @@ work on plane rotation and text stuff
 	      idealPitch = 0.02f;
 	      pitchTolerance =0.01f;
 	      accelerateRate = 0.0001f;
-	      yIntercept = -0.002f;
+	      yIntercept = 0.065f;
 	      numberOfContents = 2;
 	      pitchMessage = "";
 	      drawableThreshold = 0.1f;
@@ -200,12 +202,15 @@ work on plane rotation and text stuff
 		
 		// Set the background frame color
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GLES20.glClearDepthf(1.0f);
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
+		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);	
 		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
 		GLES20.glDepthMask(true);
 
 		ground = new Ground();
-		plane = new Plane();
+//		plane = new Plane();
+		plane = new Ground();
 		hallManager = new HallManager(this, 3, 10.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 50.0f, this.objectMatrix, this.objectFinalMatrix, this.mMVPMatrix, this.wallXOffset, this.wallYOffset);
 		mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
 	}
@@ -238,7 +243,7 @@ work on plane rotation and text stuff
 		updateCameraPosition();
 		updateLookAt();
 		updatePlanePosition();
-//		updateGravity();
+		updateGravity();
 		recordMeasurements();
 
 		drawTexture();
