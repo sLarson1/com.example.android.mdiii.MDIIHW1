@@ -101,14 +101,17 @@ public class HallManager {
 		currentHallZ = 0f;
 		
 		contentsMap = new HashMap<Coord, Drawable>();
-		Coord coord = new Coord(0f, -0.8f, 12.0f );
-		Coord coord2 = new Coord(0f, 0f, 16.0f );
-		Drawable obj = new Ground();
+		Coord coord = new Coord(0f, -0.8f, 6.0f );
+		Coord coord2 = new Coord(0f, 0f, 10.0f );
+//		Drawable obj = new Ground();
+		Drawable obj = new Fan(coord, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj2 = new Fan(coord2, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
+		
 //		Drawable obj = new Plane();
-		contentsMap.put(coord, obj);
+//		contentsMap.put(coord2, obj);
 		contentsMap.put(coord2, obj2);
-		contentsMap.put(new Coord( 0f, -0.8f, 20.0f), new Ground());
+		contentsMap.put(coord, obj);
+//		contentsMap.put(new Coord( 0f, -0.8f, 20.0f), new Ground());
 		
 		contentsList = new ArrayList<Contents>();
 		contentsList.add(new Contents(this, contentsMap, wallMatrix, mMVPMatrix, finalWallMatrix));

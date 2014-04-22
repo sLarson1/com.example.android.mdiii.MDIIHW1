@@ -1,4 +1,4 @@
-why isn't the arm being drawn
+//why isn't the arm being drawn
 //work on drawing matrix
 /*
  * update they way the plane points
@@ -153,7 +153,7 @@ work on plane rotation and text stuff
 		
 
 		yaw = 0f;
-		cameraSpeed = 0.020f;//1.25f;
+		cameraSpeed = 0.010f;//1.25f;
 		yawKludge = 0.01f;
 		pitchKludge = .1f;	
 		collisionDetected = false;
@@ -264,7 +264,8 @@ work on plane rotation and text stuff
 
 		glText.begin( 1.0f, 1.0f, 1.0f, 1.0f );         // Begin Text Rendering (Set Color WHITE)
 		  
-		glText.draw("Z:" +this.cameraZ +" pitch:"+pitch +" " +pitchMessage +"\nSpeed:"+cameraSpeed, 50, 50 );         
+//		glText.draw("Z:" +this.cameraZ +" pitch:"+pitch +" " +pitchMessage +"\nSpeed:"+cameraSpeed, 50, 50 );         
+		glText.draw("PUT BACK HALL CONTENTS!", 50, 50 );         
 
 		glText.end();     // End Text Rendering
 

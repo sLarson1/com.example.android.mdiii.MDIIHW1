@@ -59,21 +59,29 @@ public class Fan implements Drawable {
 		float[] rotationMatrix = new float[16];
 		float[] intermediateMatrix = new float[16];
 		
+		//put at origin
+		//rotate
+		//move to spot
+		
 		Matrix.setIdentityM(rotationMatrix, 0);
 
-		Matrix.translateM(rotationMatrix, 0, -baseCoordinate.getX(), -baseCoordinate.getY(), -baseCoordinate.getZ() );
+		//	move to origin
+//		Matrix.translateM(rotationMatrix, 0, -baseCoordinate.getX(), -baseCoordinate.getY(), -baseCoordinate.getZ() );
+		Matrix.translateM(rotationMatrix, 0, 0, 0, 0 );
 		
-        //	roll
-        Matrix.rotateM(rotationMatrix, 0, 45.0f, 0, 1, 0);
+		//	rotate about Z
+        Matrix.rotateM(rotationMatrix, 0, 45.0f, 0, 0, 1);
         
+        //	move to spot
         Matrix.translateM(rotationMatrix, 0, 2.0f * baseCoordinate.getX(), 2.0f * baseCoordinate.getY(), 2.0f * baseCoordinate.getZ() );
 
         
         Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + baseCoordinate.getX()+ ", baseCoordinate.getY():" + baseCoordinate.getY() + ", baseCoordinate.getZ():" + baseCoordinate.getZ() + " )");              
-        Matrix.multiplyMM(intermediateMatrix, 0, previousRotationMatrix, 0,rotationMatrix, 0);
+/*        Matrix.multiplyMM(intermediateMatrix, 0, previousRotationMatrix, 0,rotationMatrix, 0);
         
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,intermediateMatrix, 0);
-        		
+*/
+        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
         printMatrix(finalMatrix);
 		arm.draw(finalMatrix);
 	}
