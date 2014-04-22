@@ -1,3 +1,4 @@
+change order of when i rotate vs translate?
 how to make it rotate around the end of the arm instead of the middle of the arm
 /**
  * 
