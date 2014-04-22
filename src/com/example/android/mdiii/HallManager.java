@@ -101,8 +101,8 @@ public class HallManager {
 		currentHallZ = 0f;
 		
 		contentsMap = new HashMap<Coord, Drawable>();
-		Coord coord = new Coord(0f, -0.8f, 6.0f );
-		Coord coord2 = new Coord(0f, 0f, 10.0f );
+		Coord coord = new Coord(0f, -0.8f, 14.5f );
+		Coord coord2 = new Coord(0f, 0f, 19.0f );
 //		Drawable obj = new Ground();
 		Drawable obj = new Fan(coord, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj2 = new Fan(coord2, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);

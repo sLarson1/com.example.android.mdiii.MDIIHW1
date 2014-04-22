@@ -1,3 +1,4 @@
+how to make it rotate around the end of the arm instead of the middle of the arm
 /**
  * 
  */
@@ -22,6 +23,9 @@ public class Fan implements Drawable {
 	private Drawable base;
 	private Drawable arm;
 	private Drawable blades;
+	private float armInitialAngle;
+	private float armAngle;
+	private float armRotationRate;
 	//private 
 	private String TAG = "Fan";
 
@@ -35,12 +39,18 @@ public class Fan implements Drawable {
 		base = new Ground();
 		arm = new Ground();
 		blades = new Ground();
+		armInitialAngle = 0f;
+		armRotationRate = .05f;
+		armAngle = armInitialAngle;
 	}
 
 	public void drawBase(){
 		printMatrix(finalMatrix);
 		
         Matrix.setIdentityM(objectMatrix, 0);
+        
+		//	make it vertical
+        Matrix.rotateM(objectMatrix, 0, 90.0f, 0, 0, 1);
 
         Matrix.translateM(objectMatrix, 0, baseCoordinate.getX(), baseCoordinate.getY(), baseCoordinate.getZ() );
         
@@ -70,7 +80,8 @@ public class Fan implements Drawable {
 		Matrix.translateM(rotationMatrix, 0, 0, 0, 0 );
 		
 		//	rotate about Z
-        Matrix.rotateM(rotationMatrix, 0, 45.0f, 0, 0, 1);
+//        Matrix.rotateM(rotationMatrix, 0, 45.0f, 0, 0, 1);
+        Matrix.rotateM(rotationMatrix, 0, armAngle, 0.4f, 0, 1);
         
         //	move to spot
 //        Matrix.translateM(rotationMatrix, 0, 2.0f * baseCoordinate.getX(), 2.0f * baseCoordinate.getY(), 2.0f * baseCoordinate.getZ() );
@@ -85,6 +96,8 @@ public class Fan implements Drawable {
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
         printMatrix(finalMatrix);
 		arm.draw(finalMatrix);
+		
+		armAngle += armRotationRate;
 	}
 
 	public void drawBlades(){

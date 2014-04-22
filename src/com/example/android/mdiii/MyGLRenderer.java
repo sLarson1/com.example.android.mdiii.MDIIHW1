@@ -153,7 +153,7 @@ work on plane rotation and text stuff
 		
 
 		yaw = 0f;
-		cameraSpeed = 0.010f;//1.25f;
+		cameraSpeed = 0.005f;//1.25f;
 		yawKludge = 0.01f;
 		pitchKludge = .1f;	
 		collisionDetected = false;
