@@ -243,7 +243,7 @@ work on plane rotation and text stuff
 		updateCameraPosition();
 		updateLookAt();
 		updatePlanePosition();
-		updateGravity();
+//		updateGravity();
 		recordMeasurements();
 
 		drawTexture();
@@ -265,7 +265,7 @@ work on plane rotation and text stuff
 		glText.begin( 1.0f, 1.0f, 1.0f, 1.0f );         // Begin Text Rendering (Set Color WHITE)
 		  
 //		glText.draw("Z:" +this.cameraZ +" pitch:"+pitch +" " +pitchMessage +"\nSpeed:"+cameraSpeed, 50, 50 );         
-		glText.draw("PUT BACK HALL CONTENTS!", 50, 50 );         
+		glText.draw("PUT BACK HALL CONTENTS!  Also TURN ON COLLISION DETECTION, Turn ON GRAVITY", 50, 50 );         
 
 		glText.end();     // End Text Rendering
 
@@ -382,7 +382,7 @@ work on plane rotation and text stuff
 		updateVents();
 		
 		if(detectCollision()){
-			resetCamera();
+//			resetCamera();
 		}
 		Log.v(TAG, "updatePlanePosition() planeX:"+planeX+" planeY:"+planeY +" planeZ:"+planeZ);
 	}
