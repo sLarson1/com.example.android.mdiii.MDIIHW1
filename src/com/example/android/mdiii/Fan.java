@@ -1,5 +1,5 @@
-change order of when i rotate vs translate?
-how to make it rotate around the end of the arm instead of the middle of the arm
+create blades and ask for help
+add back all the stuff
 /**
  * 
  */
@@ -78,11 +78,11 @@ public class Fan implements Drawable {
 
 		//	move to origin
 //		Matrix.translateM(rotationMatrix, 0, -baseCoordinate.getX(), -baseCoordinate.getY(), -baseCoordinate.getZ() );
-		Matrix.translateM(rotationMatrix, 0, 0, 0, 0 );
+//		Matrix.translateM(rotationMatrix, 0, 0, 0, 0 );
 		
 		//	rotate about Z
 //        Matrix.rotateM(rotationMatrix, 0, 45.0f, 0, 0, 1);
-        Matrix.rotateM(rotationMatrix, 0, armAngle, 0.4f, 0, 1);
+        Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
         
         //	move to spot
 //        Matrix.translateM(rotationMatrix, 0, 2.0f * baseCoordinate.getX(), 2.0f * baseCoordinate.getY(), 2.0f * baseCoordinate.getZ() );
