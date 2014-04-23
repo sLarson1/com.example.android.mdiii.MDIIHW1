@@ -1,4 +1,5 @@
-create blades and ask for help
+create blades  - create 2 rectangle.  this will create a total for 4 blades
+the rectangles should easily be able to rotate about their centers[i.e. the fan motor axel]
 add back all the stuff
 /**
  * 
