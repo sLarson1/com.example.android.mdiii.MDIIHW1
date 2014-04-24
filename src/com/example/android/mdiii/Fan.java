@@ -1,4 +1,4 @@
-
+why does the second arm work and not the first?
 /**
  * 
  */
@@ -44,12 +44,12 @@ public class Fan implements Drawable {
 		arm = new Ground();
 		blades = new Ground();
 		armInitialAngle = 0f;
-		armRotationRate = .05f;
+		armRotationRate = .10f;
 		armAngle = armInitialAngle;
 		firstRun = true;
 		xOriginOffset= 0.25f;
 		armCoordOffset = .5f;
-		armCoord = new Coord(baseCoordinate.getX() + armCoordOffset, baseCoordinate.getY() + armCoordOffset, baseCoordinate.getZ() + armCoordOffset);
+		armCoord = new Coord(baseCoordinate.getX() + armCoordOffset, baseCoordinate.getY() +( 1 *armCoordOffset), baseCoordinate.getZ() + armCoordOffset);
 		//armCoord.setX(armCoord.getX() + baseCoordinate.getX());
 	}
 
@@ -67,7 +67,7 @@ public class Fan implements Drawable {
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,objectMatrix, 0);
         
         Log.v(TAG , "drawing entity:"+base);
-//        base.draw(finalMatrix);		
+        base.draw(finalMatrix);		
         
         printMatrix(finalMatrix);
         drawArm(finalMatrix);
@@ -84,7 +84,7 @@ public class Fan implements Drawable {
 		//move to spot
 		
 		Matrix.setIdentityM(rotationMatrix, 0);
-
+/*
 		//	move to origin
 		if(firstRun){
 			//	move to xoffset origin
@@ -96,12 +96,15 @@ public class Fan implements Drawable {
 			//	move back to xoffset origin
 			Matrix.translateM(rotationMatrix, 0, -armCoord.getX(), -armCoord.getY(), -armCoord.getZ() );
 		}
-		
+	*/	
+      Matrix.translateM(rotationMatrix, 0, 0.5f, 0, 0 );
+      
 		//	rotate about Z
         Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
         
         //	move to spot
         Matrix.translateM(rotationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
+//        Matrix.translateM(rotationMatrix, 0, baseCoordinate.getX(), baseCoordinate.getY(), baseCoordinate.getZ() );        
 
         
         Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + armCoord.getX()+ ", baseCoordinate.getY():" + armCoord.getY() + ", baseCoordinate.getZ():" + armCoord.getZ() + " )");              

@@ -1,4 +1,4 @@
-nothing shows anymore
+//nothing shows anymore
 //why isn't the arm being drawn
 //work on drawing matrix
 /*
