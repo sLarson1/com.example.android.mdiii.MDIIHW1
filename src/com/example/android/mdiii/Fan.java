@@ -1,6 +1,4 @@
-create blades  - create 2 rectangle.  this will create a total for 4 blades
-the rectangles should easily be able to rotate about their centers[i.e. the fan motor axel]
-add back all the stuff
+
 /**
  * 
  */
@@ -22,12 +20,16 @@ public class Fan implements Drawable {
 	private final float[] mMVPMatrix;
 	private final float[] finalMatrix;
 	private final Coord baseCoordinate;
+	private float armCoordOffset;
+	private final Coord armCoord;
 	private Drawable base;
 	private Drawable arm;
 	private Drawable blades;
 	private float armInitialAngle;
 	private float armAngle;
 	private float armRotationRate;
+	private boolean firstRun;
+	private float xOriginOffset;
 	//private 
 	private String TAG = "Fan";
 
@@ -44,6 +46,11 @@ public class Fan implements Drawable {
 		armInitialAngle = 0f;
 		armRotationRate = .05f;
 		armAngle = armInitialAngle;
+		firstRun = true;
+		xOriginOffset= 0.25f;
+		armCoordOffset = .5f;
+		armCoord = new Coord(baseCoordinate.getX() + armCoordOffset, baseCoordinate.getY() + armCoordOffset, baseCoordinate.getZ() + armCoordOffset);
+		//armCoord.setX(armCoord.getX() + baseCoordinate.getX());
 	}
 
 	public void drawBase(){
@@ -60,16 +67,17 @@ public class Fan implements Drawable {
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,objectMatrix, 0);
         
         Log.v(TAG , "drawing entity:"+base);
-        base.draw(finalMatrix);		
+//        base.draw(finalMatrix);		
         
         printMatrix(finalMatrix);
         drawArm(finalMatrix);
 	}
 	
 	public void drawArm(float[] previousRotationMatrix){
+
 		printMatrix(finalMatrix);
 		float[] rotationMatrix = new float[16];
-		float[] intermediateMatrix = new float[16];
+//		float[] intermediateMatrix = new float[16];
 		
 		//put at origin
 		//rotate
@@ -78,24 +86,28 @@ public class Fan implements Drawable {
 		Matrix.setIdentityM(rotationMatrix, 0);
 
 		//	move to origin
-//		Matrix.translateM(rotationMatrix, 0, -baseCoordinate.getX(), -baseCoordinate.getY(), -baseCoordinate.getZ() );
-//		Matrix.translateM(rotationMatrix, 0, 0, 0, 0 );
+		if(firstRun){
+			//	move to xoffset origin
+			Log.d(TAG, "first run:0, 0.25f, 0, 0 ");
+			Matrix.translateM(rotationMatrix, 0, 0.25f, 0, 0 );
+			firstRun = false;
+		}else{
+			Log.d(TAG, "subsequent run:" +(-armCoord.getX()) +" "+(-armCoord.getY()) +" " +(-armCoord.getZ() ));
+			//	move back to xoffset origin
+			Matrix.translateM(rotationMatrix, 0, -armCoord.getX(), -armCoord.getY(), -armCoord.getZ() );
+		}
 		
 		//	rotate about Z
-//        Matrix.rotateM(rotationMatrix, 0, 45.0f, 0, 0, 1);
         Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
         
         //	move to spot
-//        Matrix.translateM(rotationMatrix, 0, 2.0f * baseCoordinate.getX(), 2.0f * baseCoordinate.getY(), 2.0f * baseCoordinate.getZ() );
-        Matrix.translateM(rotationMatrix, 0, baseCoordinate.getX(), baseCoordinate.getY(), baseCoordinate.getZ() );
+        Matrix.translateM(rotationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
 
         
-        Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + baseCoordinate.getX()+ ", baseCoordinate.getY():" + baseCoordinate.getY() + ", baseCoordinate.getZ():" + baseCoordinate.getZ() + " )");              
-/*        Matrix.multiplyMM(intermediateMatrix, 0, previousRotationMatrix, 0,rotationMatrix, 0);
-        
-        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,intermediateMatrix, 0);
-*/
+        Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + armCoord.getX()+ ", baseCoordinate.getY():" + armCoord.getY() + ", baseCoordinate.getZ():" + armCoord.getZ() + " )");              
+
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
+        
         printMatrix(finalMatrix);
 		arm.draw(finalMatrix);
 		
