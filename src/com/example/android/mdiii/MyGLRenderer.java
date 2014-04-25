@@ -1,3 +1,5 @@
+wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERBOSE))
+   manually set the logger level for the project?
 //nothing shows anymore
 //why isn't the arm being drawn
 //work on drawing matrix
