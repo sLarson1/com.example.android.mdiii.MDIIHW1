@@ -108,15 +108,13 @@ public class HallManager {
 		Drawable obj2 = new Fan(coord2, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		
 //		Drawable obj = new Plane();
-//		contentsMap.put(coord2, obj);
 		contentsMap.put(coord2, obj2);
 		contentsMap.put(coord, obj);
 //		contentsMap.put(new Coord( 0f, -0.8f, 20.0f), new Ground());
 		
 		contentsList = new ArrayList<Contents>();
-		contentsList.add(new Contents(this, contentsMap, wallMatrix, mMVPMatrix, finalWallMatrix));
-//		WHY DOESN;T THIS WORK??????		
-//		contentsList.add(new Contents(this, null, new float[16], new float[16], new float[16]));
+//		contentsList.add(new Contents(this, contentsMap, wallMatrix, mMVPMatrix, finalWallMatrix));
+
 
 		contents = new Contents(this, null, wallMatrix, mMVPMatrix, finalWallMatrix);
 		
@@ -134,13 +132,14 @@ public class HallManager {
 	
 	
 	protected boolean draw(float currentZ){
-		if(true)
+		/*	if(true)
 		{
-	/*	if (drawEndlessVerticalWall(currentZ, HallManager.this.wallXOffset) 
+	*/
+		if (drawEndlessVerticalWall(currentZ, HallManager.this.wallXOffset) 
 				&& drawEndlessVerticalWall(currentZ, -1.0f * HallManager.this.wallXOffset)
 	            && drawEndlessHorizontalWall(currentZ, HallManager.this.wallYOffset)
 	            && drawEndlessHorizontalWall(currentZ, -1.0f * HallManager.this.wallYOffset)){
-		*/	
+			
 			boolean results = false;
 			// Now draw hall content
 			for(int i = 0; i<this.numberOfHalls ; i++){

@@ -91,6 +91,7 @@ work on plane rotation and text stuff
     private GLText glText;
     public static Context context;	
     private CameraCoord[] delay;
+    private boolean viewSonic;
     
     private int delayLength;
     private int head;
@@ -154,7 +155,8 @@ work on plane rotation and text stuff
 		
 
 		yaw = 0f;
-		cameraSpeed = 0.005f;//1.25f;
+		cameraSpeed = 0.05f;//1.25f;
+//		cameraSpeed = 0.005f;//1.25f;
 		yawKludge = 0.01f;
 		pitchKludge = .1f;	
 		collisionDetected = false;
@@ -171,7 +173,12 @@ work on plane rotation and text stuff
 	         Log.v(TAG, "sensor:"+sensor.getName() +" vendor:"+sensor.getVendor() +"\n");
 	      }
 	      mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-	      
+	      if(mSensor.getVendor().equals("ADI")){
+	    	  viewSonic = true;
+	      }else{
+	    	  
+	      }
+	    	  
 	      if(mSensor==null){
 	    	  Log.v(TAG, "sensor was null exiting");
 	    	  System.exit(0);
@@ -190,11 +197,14 @@ work on plane rotation and text stuff
 	      initialPlanePosition();
 	      idealPitch = 0.02f;
 	      pitchTolerance =0.01f;
-	      accelerateRate = 0.0001f;
-	      yIntercept = 0.065f;
+	      accelerateRate = 0.0005f;
+//	      yIntercept = 0.065f;
+	      yIntercept = 0.012f;
 	      numberOfContents = 2;
 	      pitchMessage = "";
 	      drawableThreshold = 0.1f;
+	      
+	      Matrix.setIdentityM(rotationMatrix, 0);
 	}
 
 	@Override
@@ -205,9 +215,9 @@ work on plane rotation and text stuff
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		GLES20.glClearDepthf(1.0f);
 		GLES20.glEnable(GLES20.GL_DEPTH_TEST);
-		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);	
 		GLES20.glDepthFunc(GLES20.GL_LEQUAL);
 		GLES20.glDepthMask(true);
+		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);	
 
 		ground = new Ground();
 //		plane = new Plane();
@@ -226,7 +236,7 @@ work on plane rotation and text stuff
 
 		GLES20.glClearColor(0.1f, 0.1f, 0.2f, 1.0f);
 		GLES20.glClearDepthf(1.0f);
-		GLES20.glClear(GLES20.GL_DEPTH_BUFFER_BIT);
+		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);	
 
 		// Set the camera position (View matrix)
 		Log.v(TAG, "Matrix.setLookAtM(mVMatrix, 0, cameraX:" + cameraX+ ",cameraY:" + cameraY + ",cameraZ:" + cameraZ + ",lookX:"+ lookX + ",lookY:" + lookY + ",lookZ:" + lookZ + ")");
@@ -238,13 +248,13 @@ work on plane rotation and text stuff
 
 		hallManager.draw(cameraZ);
 
-		drawPlane(objectMatrix, rotationMatrix, objectFinalMatrix);
+		drawPlane(objectMatrix, objectFinalMatrix);
 		
 		updateDirection();
 		updateCameraPosition();
 		updateLookAt();
 		updatePlanePosition();
-//		updateGravity();
+		updateGravity();
 		recordMeasurements();
 
 		drawTexture();
@@ -297,14 +307,14 @@ work on plane rotation and text stuff
 
 	private void updateYaw() {
 	   Log.v(TAG, "updateYaw: mDx" + mDx + "Original Angle [Degrees]:" +Math.toDegrees(mDx) +" New Angle [Degrees]:" +Math.toDegrees(mDx * yawKludge));
-		yaw += (mDx * yawKludge);
+		yaw = (mDx * yawKludge);
 	}
 
 
 
 	private void updatePitch() {	
 	   Log.v(TAG, "updatePitch: mDy" + mDy + "Original Angle [Degrees]:" +pitch +" New Angle [Degrees]:" +(mDy * pitchKludge));
-	   pitch += (mDy * pitchKludge); 	   
+	   pitch = (mDy * pitchKludge); 	   
 
 	}
 
@@ -383,7 +393,7 @@ work on plane rotation and text stuff
 		updateVents();
 		
 		if(detectCollision()){
-//			resetCamera();
+			resetCamera();
 		}
 		Log.v(TAG, "updatePlanePosition() planeX:"+planeX+" planeY:"+planeY +" planeZ:"+planeZ);
 	}
@@ -483,25 +493,39 @@ work on plane rotation and text stuff
 	}
 	
 		
-	private void drawPlane(float[] wallMatrix, float[] rotationMatrix, float[] finalWallMatrix){
+	private void drawPlane(float[] wallMatrix, float[] finalWallMatrix){
 		
 		final float[] intermediateMatrix = new float[16];
 		
 		 // Set the camera position (View matrix)
         Matrix.setIdentityM(wallMatrix, 0);
-        Matrix.setIdentityM(rotationMatrix, 0);
+        //Matrix.setIdentityM(rotationMatrix, 0);
  
         //   Move the Object of interest on the Screen
          Matrix.translateM(wallMatrix, 0,  planeX, planeY, planeZ);
+         
+         // add 2 temp matrices, tmp1, tmp2
+         // tmp1 = idetity
+         // then use tmp1 for result1 in following code
+         // tmp1 is the delta - the changes we're making this frame - ashould be very cl;ose to identity
+         // rotation matrix is current orientation of plane
 
          //	roll
-         Matrix.rotateM(rotationMatrix, 0, (yaw * 70.0f), 0, 0, 1);
+         Matrix.rotateM(tmp1, 0, (yaw * 70.0f), rotationMatrix[8], rotationMatrix[9], rotationMatrix[10]);
+//         Matrix.ro
          
          //	pitch
-         Matrix.rotateM(rotationMatrix, 0, pitch * -85.0f, rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);         
+         Matrix.rotateM(tmp1, 0, pitch * -85.0f, rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);         
 
          //	yaw
-         Matrix.rotateM(rotationMatrix, 0, (yaw * -80.0f), rotationMatrix[4], rotationMatrix[5], rotationMatrix[6]);
+         Matrix.rotateM(tmp1, 0, (yaw * -80.0f), rotationMatrix[4], rotationMatrix[5], rotationMatrix[6]);
+         
+         // tmp2 = rotation matrix
+         // rotation matrix = tmp1 * tmp2
+         
+		  Log.e(TAG, "yaw:"+yaw * 70.0f + " pitch :"+pitch * -85.0); 
+		  Log.e(TAG, "dir:"+rotationMatrix[8]+ "  " +  rotationMatrix[9]+ "  " + rotationMatrix[10]); 
+
          
 //         Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix, 0, wallMatrix, 0);
          Matrix.multiplyMM(intermediateMatrix, 0, wallMatrix,  0, rotationMatrix, 0);
@@ -558,6 +582,7 @@ work on plane rotation and text stuff
 
 		  final float alpha = 0.8f;
 
+		  if(!viewSonic){
 		// Isolate the force of gravity with the low-pass filter.
 		  gravity[0] = alpha * gravity[0] /* previous X gravity */ + (1 - alpha) * event.values[0];
 		  gravity[1] = alpha * gravity[1] /* previous Y gravity */ + (1 - alpha) * event.values[1];
@@ -567,7 +592,27 @@ work on plane rotation and text stuff
 		  linear_acceleration[0] = event.values[0] - gravity[0];
 		  linear_acceleration[1] = event.values[1] - gravity[1];
 		  linear_acceleration[2] = event.values[2] - gravity[2];
-	
+		  }else{
+			  
+				// Isolate the force of gravity with the low-pass filter.
+			  gravity[0] = alpha * gravity[0] /* previous X gravity */ + (1 - alpha) * event.values[0];
+			  gravity[1] = alpha * gravity[1] /* previous Y gravity */ + (1 - alpha) * event.values[1];
+			  gravity[2] = alpha * gravity[2] /* previous Y gravity */ + (1 - alpha) * event.values[2];
+
+			  // Remove the gravity contribution with the high-pass filter.
+			  linear_acceleration[0] = event.values[0] - gravity[0];
+			  linear_acceleration[1] = event.values[1] - gravity[1];
+			  linear_acceleration[2] = event.values[2] - gravity[2];			  
+/*			  
+			  gravity[0] = alpha * gravity[0] + (1 - alpha) * event.values[0];
+			  gravity[1] = alpha * gravity[1] + (1 - alpha) * event.values[1];
+			  gravity[2] = alpha * gravity[2] + (1 - alpha) * event.values[2];
+
+			  linear_acceleration[0] = (-event.values[1]) - gravity[0];
+			  linear_acceleration[1] = event.values[0] - gravity[1];
+			  linear_acceleration[2] = (-event.values[2]) - gravity[2];
+*/			  
+		  }
 		  /* forward backward front back tilt*/
 		  Log.v(TAG, "onSensorChanged() - linear_acceleration[0]:"+linear_acceleration[0] + " gravity[0]:"+gravity[0] +" event.values[0]:" +event.values[0]);
 		  /*side to side side to side tilt */
@@ -577,8 +622,10 @@ work on plane rotation and text stuff
 		  
 		//	set yaw
 		setmDx(linear_acceleration[1] * .90f);
+//		setmDx(linear_acceleration[1] );
 		// set pitch
 		setmDy(linear_acceleration[0] * .10f);
+	
 		
 	}	
 
