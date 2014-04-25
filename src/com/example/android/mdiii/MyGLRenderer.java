@@ -1,3 +1,5 @@
+look on home computer for the MyGLRenderer code that had all
+my work for the delta matrix
 wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERBOSE))
    manually set the logger level for the project?
 //nothing shows anymore
