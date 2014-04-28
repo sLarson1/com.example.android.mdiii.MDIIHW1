@@ -132,14 +132,15 @@ public class HallManager {
 	
 	
 	protected boolean draw(float currentZ){
-		/*	if(true)
+		/*		if(true)
 		{
-	*/
+*/	
+	
 		if (drawEndlessVerticalWall(currentZ, HallManager.this.wallXOffset) 
 				&& drawEndlessVerticalWall(currentZ, -1.0f * HallManager.this.wallXOffset)
 	            && drawEndlessHorizontalWall(currentZ, HallManager.this.wallYOffset)
 	            && drawEndlessHorizontalWall(currentZ, -1.0f * HallManager.this.wallYOffset)){
-			
+		
 			boolean results = false;
 			// Now draw hall content
 			for(int i = 0; i<this.numberOfHalls ; i++){
