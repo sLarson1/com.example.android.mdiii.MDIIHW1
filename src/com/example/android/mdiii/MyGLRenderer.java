@@ -1,6 +1,11 @@
+
 try running it with both pitch and yaw commented out and see how it looks
+Are we using the right indexes on the rotationMatrix when we do the rotation
+maybe looking at the axises one at a time will help figure that out
 Is he there on MOndays?
 otherwise give up and ask for  more help and do something else
+   /*  */ 
+   
 /*
 look on home computer for the MyGLRenderer code that had all
 my work for the delta matrix
@@ -557,7 +562,7 @@ wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERB
  */
 		          
 /*
- * comb04 betther than 3?  up and down are too sensitve
+ * comb04 betther than 3?  up and do\wn are too sensitve
  * 		          Matrix.multiplyMM(rotationMatrix, 0, deltaMatrix,  0, rotationMatrix, 0);
  * 				  Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix,  0, objectMatrix, 0);
  */
@@ -571,8 +576,8 @@ wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERB
 
 		          
 //		          Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix, 0, wallMatrix, 0);
-		          Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix,  0, objectMatrix, 0);
-//		          Matrix.multiplyMM(intermediateMatrix, 0, objectMatrix,  0, rotationMatrix, 0);
+//		          Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix,  0, objectMatrix, 0);
+		          Matrix.multiplyMM(intermediateMatrix, 0, objectMatrix,  0, rotationMatrix, 0);
 		                   
 
 		          // Combine the Object of interest matrix with the projection and camera view
