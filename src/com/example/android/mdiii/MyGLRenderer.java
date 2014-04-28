@@ -1,3 +1,6 @@
+try running it with both pitch and yaw commented out and see how it looks
+Is he there on MOndays?
+otherwise give up and ask for  more help and do something else
 /*
 look on home computer for the MyGLRenderer code that had all
 my work for the delta matrix
