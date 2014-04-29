@@ -1,10 +1,15 @@
+try using 2,6,9
 
+try printing out the difference in the values of all the matrix cells between runs
+
+what matrix cells does just doing yaw or pitch affect?
+/* 
 try running it with both pitch and yaw commented out and see how it looks
 Are we using the right indexes on the rotationMatrix when we do the rotation
 maybe looking at the axises one at a time will help figure that out
 Is he there on MOndays?
 otherwise give up and ask for  more help and do something else
-   /*  */ 
+  */ 
    
 /*
 look on home computer for the MyGLRenderer code that had all
@@ -527,16 +532,20 @@ wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERB
 		          // tmp1 is the delta - the changes we're making this frame - ashould be very cl;ose to identity
 		          // rotation matrix is current orientation of plane
 
-		          //	roll
+		          //	roll - good
 		          Matrix.rotateM(deltaMatrix, 0, (yaw * 70.0f), rotationMatrix[8], rotationMatrix[9], rotationMatrix[10]);
-//		          Matrix.ro
 		          
-		          //	pitch
-		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);         
+//		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[0], rotationMatrix[4], rotationMatrix[8]);		          
+//		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[1], rotationMatrix[5], rotationMatrix[9]);
+		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[2], rotationMatrix[6], rotationMatrix[10]);
+		          //	pitch - bad
+/*
+		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);
+//		          Matrix.rotateM(deltaMatrix, 0, pitch , rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);
 
 		          //	yaw
 		          Matrix.rotateM(deltaMatrix, 0, (yaw * -80.0f), rotationMatrix[4], rotationMatrix[5], rotationMatrix[6]);
-		          
+*/
 		          // tmp2 = rotation matrix
 		          // rotation matrix = tmp1 * tmp2
 		          //final float[] tmp2 = rotationMatrix;
