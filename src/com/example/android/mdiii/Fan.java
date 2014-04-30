@@ -1,3 +1,5 @@
+started blade work
+   create the actual blade drawable
 tighten up the rotation of the fan
 //why does the second arm work and not the first?
 /**
@@ -101,17 +103,32 @@ public class Fan implements Drawable {
         //	rotate about Y
         Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 1, 0);
         
-        //	move to spot
+        is this the right way to copy a matrix?
+        used .equals() to find out
+        float[] bladeMatrix = rotationMatrix;         
+        
+        // rotate blades about X
+        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 1, 0, 0);      
+        
+        //	move Arm to spot
         Matrix.translateM(rotationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
+        
+        //  move blade to spot
+        Matrix.translateM(bladeMatrix, 0, bladeCoord.getX(), bladeCoord.getY(), bladeCoord.getZ() );
         
         Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + armCoord.getX()+ ", baseCoordinate.getY():" + armCoord.getY() + ", baseCoordinate.getZ():" + armCoord.getZ() + " )");              
 
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
         
+        multiply bladematrix
+        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
+        
 //        printMatrix(finalMatrix);
 		arm.draw(finalMatrix);
-		
+		blade.draw(finalMatrix)
+				
 		changeArmAngle();
+		changeBladeAngle();
 	}
 	
 	public void turnArm(){
