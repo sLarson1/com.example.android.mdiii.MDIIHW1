@@ -1,8 +1,9 @@
-started blade work
-   create the actual blade drawable
-tighten up the rotation of the fan
+
 //why does the second arm work and not the first?
 /**
+ * started blade work
+   create the actual blade drawable
+tighten up the rotation of the fan
  * 
  */
 package com.example.android.mdiii;
