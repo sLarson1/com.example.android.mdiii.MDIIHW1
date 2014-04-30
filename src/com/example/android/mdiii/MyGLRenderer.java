@@ -1,9 +1,11 @@
-try using 2,6,9
 
-try printing out the difference in the values of all the matrix cells between runs
 
-what matrix cells does just doing yaw or pitch affect?
-/* 
+/*
+ * try using 2,6,9
+
+ * try printing out the difference in the values of all the matrix cells between runsg
+
+what matrix cells does just doing yaw or pitch affect? 
 try running it with both pitch and yaw commented out and see how it looks
 Are we using the right indexes on the rotationMatrix when we do the rotation
 maybe looking at the axises one at a time will help figure that out
@@ -175,7 +177,7 @@ wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERB
 
 		 		yaw = 0f;
 //		 		cameraSpeed = 0.01f;//1.25f;
-		 		cameraSpeed = 0.0001f;//1.25f;
+		 		cameraSpeed = 0.00001f;//1.25f;
 		 		yawKludge = 0.01f;
 		 		pitchKludge = .1f;	
 		 		collisionDetected = false;

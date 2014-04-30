@@ -101,18 +101,24 @@ public class HallManager {
 		currentHallZ = 0f;
 		
 		contentsMap = new HashMap<Coord, Drawable>();
-		Coord coord = new Coord(0f, 0f, 13.5f );
-		Coord coord2 = new Coord(0f, 0f, 18.0f );
-		Coord coord3 = new Coord(0f, 0f, 23.0f );
+		Coord coord = new Coord(0f, 0f, 8.5f );
+		Coord coord2 = new Coord(0f, 0f, 13.0f );
+		Coord coord3 = new Coord(0f, 0f, 19.0f );
+		Coord coord4 = new Coord(0f, 0f, 25.0f );
+		Coord coord5 = new Coord(0f, 0f, 30.0f );
 //		Drawable obj = new Ground();
 		Drawable obj = new Fan(coord, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj2 = new Fan(coord2, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj3 = new Fan(coord3, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
+		Drawable obj4 = new Fan(coord4, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
+		Drawable obj5 = new Fan(coord5, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		
 //		Drawable obj = new Plane();
 		contentsMap.put(coord, obj);
 	    contentsMap.put(coord2, obj2);
 	    contentsMap.put(coord3, obj3);
+	    contentsMap.put(coord4, obj4);
+	    contentsMap.put(coord5, obj5);
 //		contentsMap.put(new Coord( 0f, -0.8f, 20.0f), new Ground());
 		
 		contentsList = new ArrayList<Contents>();
