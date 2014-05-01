@@ -61,7 +61,6 @@ public class HallManager {
 	private Map<Coord, Drawable> interactiveObjectMap;
 	private List<Contents> contentsList;
 	public MyGLRenderer renderer;
-	public Contents contents;
 	public HashMap<Coord, Drawable> contentsMap;
 	
 	
@@ -113,20 +112,15 @@ public class HallManager {
 		Drawable obj4 = new Fan(coord4, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj5 = new Fan(coord5, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		
-//		Drawable obj = new Plane();
 		contentsMap.put(coord, obj);
-	    contentsMap.put(coord2, obj2);
+/*	    contentsMap.put(coord2, obj2);
 	    contentsMap.put(coord3, obj3);
 	    contentsMap.put(coord4, obj4);
 	    contentsMap.put(coord5, obj5);
-//		contentsMap.put(new Coord( 0f, -0.8f, 20.0f), new Ground());
-		
+	*/	
 		contentsList = new ArrayList<Contents>();
 		contentsList.add(new Contents(this, contentsMap, wallMatrix, mMVPMatrix, finalWallMatrix));
 
-
-		contents = new Contents(this, null, wallMatrix, mMVPMatrix, finalWallMatrix);
-		
 		for(int i=0; i< numberOfHalls; i++){
 			if(i==0){
 				halls[i] = new Hall(startX, endX, startY, endY, startZ, startZ + hallLength);

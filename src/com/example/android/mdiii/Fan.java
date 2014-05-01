@@ -58,7 +58,8 @@ public class Fan implements Drawable {
 		this.baseCoordinate = rootCoordinate;
 		base = new Ground();
 		arm = new Ground();
-		blades = new Blades();
+//		blades = new Blades();
+		blades = new Ground();
 		armInitialAngle = 0f;
 		armAngle = armInitialAngle;
 		bladeInitialAngle = armInitialAngle;
@@ -109,36 +110,31 @@ public class Fan implements Drawable {
 		//put at origin
 		Matrix.setIdentityM(rotationMatrix, 0);
 		Matrix.setIdentityM(bladeMatrix, 0);
-		
+	
 		//	move a little to the right so we rotate by its edge
 		Matrix.translateM(rotationMatrix, 0, 0.5f, 0, 0 );
       
 		//	rotate about Z
         Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
+        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 0, 0, 1);
+//        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 0, 1, 0);
+//        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 1, 0, 0);
+        /*	      
+        
         
         //	rotate about Y
         Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 1, 0);
   
-        
-        float[] bladeMatrix = Arrays.copyOf(rotationMatrix, rotationMatrix.length);         
-        
-        // rotate blades about X
-        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 1, 0, 0);      
-        
         //	move Arm to spot
         Matrix.translateM(rotationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
-        
-        //  move blade to spot
-        Matrix.translateM(bladeMatrix, 0, bladeCoord.getX(), bladeCoord.getY(), bladeCoord.getZ() );
-        
+      
         Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + armCoord.getX()+ ", baseCoordinate.getY():" + armCoord.getY() + ", baseCoordinate.getZ():" + armCoord.getZ() + " )");              
 
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
         
         //	draw arm
         arm.draw(finalMatrix);
-        
-
+*/
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
         
 		blades.draw(finalMatrix);
@@ -149,7 +145,7 @@ public class Fan implements Drawable {
 	
 
 	private void changeBladeAngle() {
-		bladeAngle += bladeRotationRate;
+		bladeAngle += 10 *  bladeRotationRate;
 	}
 
 	public void drawBlades(){
