@@ -8,6 +8,9 @@ tighten up the rotation of the fan
  */
 package com.example.android.mdiii;
 
+import java.util.Arrays;
+
+import android.annotation.SuppressLint;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -19,13 +22,16 @@ public class Fan implements Drawable {
 	
 	private final float[] baseMatrix = new float[16];
 	private final float[] armlMatrix = new float[16]; 
-	private final float[] bladeMatrix = new float[16]; 
+	private final float[] bladeMatrix = new float[16];
+	
 	private final float[] objectMatrix;
 	private final float[] mMVPMatrix;
 	private final float[] finalMatrix;
 	private final Coord baseCoordinate;
 	private float armCoordOffset;
+	private float bladeCoordOffset;
 	private final Coord armCoord;
+	private final Coord bladeCoord;
 	private Drawable base;
 	private Drawable arm;
 	private Drawable blades;
@@ -39,6 +45,9 @@ public class Fan implements Drawable {
 	private float xOriginOffset;
 	//private 
 	private String TAG = "Fan";
+	private float bladeInitialAngle;
+	private float bladeRotationRate;
+	private float bladeAngle;
 
 	
 
@@ -49,17 +58,21 @@ public class Fan implements Drawable {
 		this.baseCoordinate = rootCoordinate;
 		base = new Ground();
 		arm = new Ground();
-		blades = new Ground();
+		blades = new Blades();
 		armInitialAngle = 0f;
+		armAngle = armInitialAngle;
+		bladeInitialAngle = armInitialAngle;
+		bladeAngle = bladeInitialAngle;
 		armRotationRate = .025f;
+		bladeRotationRate = .025f;
 		armMaxAngle = 400.0f * armRotationRate;
 		armMinAngle = -armMaxAngle;
-		armAngle = armInitialAngle;
 		armRotationDirection = "up";
 		firstRun = true;
 		xOriginOffset= 0.25f;
 		armCoordOffset = .5f;
 		armCoord = new Coord(baseCoordinate.getX() + armCoordOffset, baseCoordinate.getY() +( 1 *armCoordOffset), baseCoordinate.getZ() + armCoordOffset);
+		bladeCoord = new Coord(armCoord.getX() + bladeCoordOffset, armCoord.getY() +( 1 *bladeCoordOffset), armCoord.getZ() + bladeCoordOffset);
 		//armCoord.setX(armCoord.getX() + baseCoordinate.getX());
 	}
 
@@ -83,6 +96,7 @@ public class Fan implements Drawable {
         drawArm(finalMatrix);
 	}
 	
+	@SuppressLint("NewApi")
 	public void drawArm(float[] previousRotationMatrix){
 
 		printMatrix(finalMatrix);
@@ -94,7 +108,8 @@ public class Fan implements Drawable {
 
 		//put at origin
 		Matrix.setIdentityM(rotationMatrix, 0);
-
+		Matrix.setIdentityM(bladeMatrix, 0);
+		
 		//	move a little to the right so we rotate by its edge
 		Matrix.translateM(rotationMatrix, 0, 0.5f, 0, 0 );
       
@@ -103,10 +118,9 @@ public class Fan implements Drawable {
         
         //	rotate about Y
         Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 1, 0);
+  
         
-        is this the right way to copy a matrix?
-        used .equals() to find out
-        float[] bladeMatrix = rotationMatrix;         
+        float[] bladeMatrix = Arrays.copyOf(rotationMatrix, rotationMatrix.length);         
         
         // rotate blades about X
         Matrix.rotateM(bladeMatrix, 0, bladeAngle, 1, 0, 0);      
@@ -121,43 +135,21 @@ public class Fan implements Drawable {
 
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
         
-        multiply bladematrix
+        //	draw arm
+        arm.draw(finalMatrix);
+        
+
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
         
-//        printMatrix(finalMatrix);
-		arm.draw(finalMatrix);
-		blade.draw(finalMatrix)
+		blades.draw(finalMatrix);
 				
 		changeArmAngle();
 		changeBladeAngle();
 	}
 	
-	public void turnArm(){
-		printMatrix(finalMatrix);
-		float[] rotationMatrix = new float[16];
-		
-		//put at origin
-		//rotate
-		//move to spot
-		
-		Matrix.setIdentityM(rotationMatrix, 0);
 
-		Matrix.translateM(rotationMatrix, 0, 0.5f, 0, 0 );
-      
-		//	rotate about Z
-        Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
-        
-        //	move to spot
-        Matrix.translateM(rotationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
-        
-        Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + armCoord.getX()+ ", baseCoordinate.getY():" + armCoord.getY() + ", baseCoordinate.getZ():" + armCoord.getZ() + " )");              
-
-        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
-        
-//        printMatrix(finalMatrix);
-		arm.draw(finalMatrix);
-		
-		changeArmAngle();
+	private void changeBladeAngle() {
+		bladeAngle += bladeRotationRate;
 	}
 
 	public void drawBlades(){

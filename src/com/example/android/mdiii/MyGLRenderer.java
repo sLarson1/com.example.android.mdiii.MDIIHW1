@@ -43,27 +43,27 @@ wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERB
 		 */
 		 package com.example.android.mdiii;
 
-		 import java.util.List;
-		 import java.util.Map.Entry;
+		 import java.util.Arrays;
+import java.util.List;
 
-		 import javax.microedition.khronos.egl.EGLConfig;
-		 import javax.microedition.khronos.opengles.GL10;
+import javax.microedition.khronos.egl.EGLConfig;
+import javax.microedition.khronos.opengles.GL10;
 
-		 import android.content.Context;
-		 import android.graphics.Bitmap;
-		 import android.graphics.Canvas;
-		 import android.graphics.Paint;
-		 import android.graphics.drawable.Drawable;
-		 import android.hardware.Sensor;
-		 import android.hardware.SensorEvent;
-		 import android.hardware.SensorEventListener;
-		 import android.hardware.SensorManager;
-		 import android.opengl.GLES20;
-		 import android.opengl.GLSurfaceView;
-		 import android.opengl.Matrix;
-		 import android.util.Log;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.graphics.drawable.Drawable;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.opengl.GLES20;
+import android.opengl.GLSurfaceView;
+import android.opengl.Matrix;
+import android.util.Log;
 
-		 import com.example.android.mdiii.text.GLText;
+import com.example.android.mdiii.text.GLText;
 
 		 /**
 		  * @author slarson
@@ -125,6 +125,7 @@ wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERB
 		 	private final float[] objectMatrix = new float[16];
 		 	private final float[] rotationMatrix = new float[16];
 		 	private final float[] objectFinalMatrix = new float[16];
+		 	private final float[] previousMatrix = new float[16];
 		 	
 //		 	private HallManager[] halls;
 		 	
@@ -551,8 +552,14 @@ wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERB
 		          // tmp2 = rotation matrix
 		          // rotation matrix = tmp1 * tmp2
 		          //final float[] tmp2 = rotationMatrix;
-		          float[] tmp2 = new float[16];
-		          copyMatrix(rotationMatrix, tmp2);
+		          
+		          float[] tmp2 = Arrays.copyOf(rotationMatrix,rotationMatrix.length);
+		          
+//		          copyMatrix(rotationMatrix, tmp2);
+		          
+		          float[] tmp3 = tmp2;
+Log.e(TAG, "tmp2 equals rotationMatrix?:"+tmp2.equals(rotationMatrix) );		          
+Log.e(TAG, "tmp3 equals tmp2?:"+tmp3.equals(tmp2));		          
 		          
 /*	combo1 - better than #2 with speed added
 		          Matrix.multiplyMM(rotationMatrix, 0, deltaMatrix,  0, rotationMatrix, 0);
