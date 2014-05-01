@@ -58,8 +58,8 @@ public class Fan implements Drawable {
 		this.baseCoordinate = rootCoordinate;
 		base = new Ground();
 		arm = new Ground();
-//		blades = new Blades();
-		blades = new Ground();
+		blades = new Blades();
+//		blades = new Ground();
 		armInitialAngle = 0f;
 		armAngle = armInitialAngle;
 		bladeInitialAngle = armInitialAngle;
@@ -102,12 +102,13 @@ public class Fan implements Drawable {
 
 		printMatrix(finalMatrix);
 		float[] rotationMatrix = new float[16];
+		float[] newFinalMatrix = new float[16];
 		
 		
 		//rotate
 		//move to spot
-
 		//put at origin
+		
 		Matrix.setIdentityM(rotationMatrix, 0);
 		Matrix.setIdentityM(bladeMatrix, 0);
 	
@@ -116,10 +117,10 @@ public class Fan implements Drawable {
       
 		//	rotate about Z
         Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
+/*        
         Matrix.rotateM(bladeMatrix, 0, bladeAngle, 0, 0, 1);
-//        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 0, 1, 0);
-//        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 1, 0, 0);
-        /*	      
+       Matrix.rotateM(bladeMatrix, 0, bladeAngle, 1, 0, 0);
+*/	      
         
         
         //	rotate about Y
@@ -131,21 +132,22 @@ public class Fan implements Drawable {
         Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + armCoord.getX()+ ", baseCoordinate.getY():" + armCoord.getY() + ", baseCoordinate.getZ():" + armCoord.getZ() + " )");              
 
         Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
-        
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
         //	draw arm
         arm.draw(finalMatrix);
-*/
-        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
+        changeArmAngle();
+/*
+        Matrix.multiplyMM(newFinalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
         
-		blades.draw(finalMatrix);
-				
-		changeArmAngle();
+		blades.draw(newFinalMatrix);			
+		
 		changeBladeAngle();
+*/		
 	}
 	
 
 	private void changeBladeAngle() {
-		bladeAngle += 10 *  bladeRotationRate;
+		bladeAngle += 0.1f *  bladeRotationRate;
 	}
 
 	public void drawBlades(){

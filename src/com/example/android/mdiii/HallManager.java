@@ -105,19 +105,20 @@ public class HallManager {
 		Coord coord3 = new Coord(0f, 0f, 19.0f );
 		Coord coord4 = new Coord(0f, 0f, 25.0f );
 		Coord coord5 = new Coord(0f, 0f, 30.0f );
-//		Drawable obj = new Ground();
-		Drawable obj = new Fan(coord, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
+		Drawable obj = new Ground();
+//		Drawable obj = new Fan(coord, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj2 = new Fan(coord2, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj3 = new Fan(coord3, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj4 = new Fan(coord4, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj5 = new Fan(coord5, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		
 		contentsMap.put(coord, obj);
-/*	    contentsMap.put(coord2, obj2);
+/**/  	    
+		 contentsMap.put(coord2, obj2);
 	    contentsMap.put(coord3, obj3);
 	    contentsMap.put(coord4, obj4);
 	    contentsMap.put(coord5, obj5);
-	*/	
+	
 		contentsList = new ArrayList<Contents>();
 		contentsList.add(new Contents(this, contentsMap, wallMatrix, mMVPMatrix, finalWallMatrix));
 
@@ -135,15 +136,15 @@ public class HallManager {
 	
 	
 	protected boolean draw(float currentZ){
-				if(true)
+	   /*				if(true)
 		{
-
-				   /*	
+*/
+				   	
 		if (drawEndlessVerticalWall(currentZ, HallManager.this.wallXOffset) 
 				&& drawEndlessVerticalWall(currentZ, -1.0f * HallManager.this.wallXOffset)
 	            && drawEndlessHorizontalWall(currentZ, HallManager.this.wallYOffset)
 	            && drawEndlessHorizontalWall(currentZ, -1.0f * HallManager.this.wallYOffset)){
-*/ 		
+ 		
 			boolean results = false;
 			// Now draw hall content
 			for(int i = 0; i<this.numberOfHalls ; i++){
