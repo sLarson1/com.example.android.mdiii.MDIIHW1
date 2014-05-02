@@ -522,42 +522,48 @@ import com.example.android.mdiii.text.GLText;
 		 		
 		 		 // Set the camera position (View matrix)
 //		         Matrix.setIdentityM(wallMatrix, 0);
-		         //Matrix.setIdentityM(rotationMatrix, 0);
 		 		Matrix.setIdentityM(intermediateMatrix, 0);
 		 		Matrix.setIdentityM(deltaMatrix, 0);
 		  
 		         //   Move the Object of interest on the Screen
 		          Matrix.translateM(objectMatrix, 0,  planeX, planeY, planeZ);
 		          
-		          // add 2 temp matrices, tmp1, tmp2
-		          // tmp1 = idetity
-		          // then use tmp1 for result1 in following code
-		          // tmp1 is the delta - the changes we're making this frame - ashould be very cl;ose to identity
-		          // rotation matrix is current orientation of plane
 
-		          //	roll - good
+		          //	roll - good - 8, 9, 10 best combo		          
 		          Matrix.rotateM(deltaMatrix, 0, (yaw * 70.0f), rotationMatrix[8], rotationMatrix[9], rotationMatrix[10]);
-		          
 
+		          // bad
+//		          Matrix.rotateM(deltaMatrix, 0, (yaw * 70.0f), rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);
+		          //worse
+//		          Matrix.rotateM(deltaMatrix, 0, (yaw * 70.0f), rotationMatrix[4], rotationMatrix[5], rotationMatrix[6]);
+		          
+/*
 		          //	pitch - bad
 		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);
 
 
 		          //	yaw
 		          Matrix.rotateM(deltaMatrix, 0, (yaw * -80.0f), rotationMatrix[4], rotationMatrix[5], rotationMatrix[6]);
-	          
-		          float[] tmp2 = Arrays.copyOf(rotationMatrix,rotationMatrix.length);
-		                 		          
-		 		  Log.e(TAG, "yaw:"+yaw * 70.0f + " pitch :"+pitch * -85.0); 
-		 		  Log.e(TAG, "dir:"+rotationMatrix[8]+ "  " +  rotationMatrix[9]+ "  " + rotationMatrix[10]); 
-
+	*/          
+//	#3	same as #2 except more vertical?		          
+		          Matrix.multiplyMM(rotationMatrix, 0, deltaMatrix,  0, rotationMatrix, 0);
+		          Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix,  0, objectMatrix, 0);
+//	#2 works better than 0 or 1		          
+//		          Matrix.multiplyMM(rotationMatrix, 0, rotationMatrix,  0, deltaMatrix, 0);
+//		          Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix,  0, objectMatrix, 0);
 		          
-
+// #0
+//		          Matrix.multiplyMM(rotationMatrix, 0, deltaMatrix,  0, rotationMatrix, 0);
+//	          	  Matrix.multiplyMM(intermediateMatrix, 0, objectMatrix,  0, rotationMatrix, 0);		          
+		          
+/*#1 doesn't move
+ * 		          Matrix.multiplyMM(rotationMatrix, 0, rotationMatrix,  0, deltaMatrix, 0);
 		          Matrix.multiplyMM(intermediateMatrix, 0, objectMatrix,  0, rotationMatrix, 0);
-		                   
+ * 		          
+ */
 
-		          // Combine the Object of interest matrix with the projection and camera view
-		          Matrix.multiplyMM(finalWallMatrix, 0, mMVPMatrix, 0, intermediateMatrix, 0);
+ 		          // Combine the Object of interest matrix with the projection and camera view
+  		          Matrix.multiplyMM(finalWallMatrix, 0, mMVPMatrix, 0, intermediateMatrix, 0);
 		  
 		        // Draw Ground
 		          plane.draw(finalWallMatrix);         
