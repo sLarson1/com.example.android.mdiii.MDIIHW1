@@ -57,6 +57,7 @@ public class Blades implements Drawable{
 	    
 	    static float vertices[] =
 	        {
+	    	/*
 		       0,         -0.5f,    0,    // 1
 		       0.25f,   -0.5f,    0,    // 2
 		       0.25f,    0.5f,    0,    // 3
@@ -65,11 +66,18 @@ public class Blades implements Drawable{
 		       0.25f,   -0.5f,	  -0.5f, // 6
 		       0f,			0.5f,	  -0.5f, // 7
 		       0f,		   -0.5f,	  -0.5f, // 8
+		       */
+	    	0, 0.5f, 0,
+	    	0.5f, 0.5f, 0,
+	    	0, -0.5f, 0,
+	    	0.5f, -0.5f, 0
+	    	
 	         };
 	    
 	    
 	    static float vColor[] =
 	        {
+	    	/*
 	            0.4f, 0.4f, 0.8f,
 	            0.4f, 0.4f, 0.8f,
 	            0.4f, 0.4f, 0.8f,
@@ -77,11 +85,19 @@ public class Blades implements Drawable{
 	            0.3f, 0.2f, 0.1f,
 	            0.3f, 0.2f, 0.1f,
 	            0.3f, 0.2f, 0.1f
+	            */
+            0.5f, 0.2f, 0.8f,
+            0.3f, 0.2f, 0.1f,
+            0.8f, 0.1f, 0.4f,
+            0.1f, 0.2f, 0.5f
 	         };
 
 	    
 	      static short groundIndices[] =
 	          {
+	    	  3, 1, 2,
+	    	  3, 2, 4
+	    	  /*
 	    	  1,	3,		2,
 	    	  1,	4,		3,	
 	    	  2,	3,		6,
@@ -94,11 +110,7 @@ public class Blades implements Drawable{
 	    	  3,	7,		5,	
 	    	  1,	8,		2,
 	    	  2,	8,		6
-	    	  /*
-		    	1,	4,	0,
-		    	0,	4,	3,
-		    	2,	0,	4
-		    	*/
+*/
 	          };      
 	      
 	      

@@ -178,7 +178,7 @@ import com.example.android.mdiii.text.GLText;
 
 		 		yaw = 0f;
 //		 		cameraSpeed = 0.01f;//1.25f;
-		 		cameraSpeed = 0.00001f;//1.25f;
+		 		cameraSpeed = 0.001f;//1.25f;
 		 		yawKludge = 0.01f;
 		 		pitchKludge = .1f;	
 		 		collisionDetected = false;
@@ -538,63 +538,21 @@ import com.example.android.mdiii.text.GLText;
 		          //	roll - good
 		          Matrix.rotateM(deltaMatrix, 0, (yaw * 70.0f), rotationMatrix[8], rotationMatrix[9], rotationMatrix[10]);
 		          
-//		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[0], rotationMatrix[4], rotationMatrix[8]);		          
-//		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[1], rotationMatrix[5], rotationMatrix[9]);
-		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[2], rotationMatrix[6], rotationMatrix[10]);
+
 		          //	pitch - bad
-/*
 		          Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);
-//		          Matrix.rotateM(deltaMatrix, 0, pitch , rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);
+
 
 		          //	yaw
 		          Matrix.rotateM(deltaMatrix, 0, (yaw * -80.0f), rotationMatrix[4], rotationMatrix[5], rotationMatrix[6]);
-*/
-		          // tmp2 = rotation matrix
-		          // rotation matrix = tmp1 * tmp2
-		          //final float[] tmp2 = rotationMatrix;
-		          
+	          
 		          float[] tmp2 = Arrays.copyOf(rotationMatrix,rotationMatrix.length);
-		          
-//		          copyMatrix(rotationMatrix, tmp2);
-		          
-		          float[] tmp3 = tmp2;
-Log.e(TAG, "tmp2 equals rotationMatrix?:"+tmp2.equals(rotationMatrix) );		          
-Log.e(TAG, "tmp3 equals tmp2?:"+tmp3.equals(tmp2));		          
-		          
-/*	combo1 - better than #2 with speed added
-		          Matrix.multiplyMM(rotationMatrix, 0, deltaMatrix,  0, rotationMatrix, 0);
-		          Matrix.multiplyMM(intermediateMatrix, 0, objectMatrix,  0, rotationMatrix, 0);
-	*/
-		          
-/*
- * combo2 - better
- *		          Matrix.multiplyMM(rotationMatrix, 0, rotationMatrix,  0, deltaMatrix, 0);
- *				 Matrix.multiplyMM(intermediateMatrix, 0, objectMatrix,  0, rotationMatrix, 0); 		          
- */
-	
-//	3 and 4 are similar  niether one adjust the pitch it just translates up/down		          
-/*
- * combo 3 - doens't work at all		          
- * 				  Matrix.multiplyMM(rotationMatrix, 0, rotationMatrix,  0, deltaMatrix, 0);
- * 		          Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix,  0, objectMatrix, 0);
- */
-		          
-/*
- * comb04 betther than 3?  up and do\wn are too sensitve
- * 		          Matrix.multiplyMM(rotationMatrix, 0, deltaMatrix,  0, rotationMatrix, 0);
- * 				  Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix,  0, objectMatrix, 0);
- */
-		          
-//ITS COMBO #1 OR #2		          
-		         Matrix.multiplyMM(rotationMatrix, 0, deltaMatrix,  0, rotationMatrix, 0);
-//		          Matrix.multiplyMM(rotationMatrix, 0, rotationMatrix,  0, deltaMatrix, 0);
-		          
+		                 		          
 		 		  Log.e(TAG, "yaw:"+yaw * 70.0f + " pitch :"+pitch * -85.0); 
 		 		  Log.e(TAG, "dir:"+rotationMatrix[8]+ "  " +  rotationMatrix[9]+ "  " + rotationMatrix[10]); 
 
 		          
-//		          Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix, 0, wallMatrix, 0);
-//		          Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix,  0, objectMatrix, 0);
+
 		          Matrix.multiplyMM(intermediateMatrix, 0, objectMatrix,  0, rotationMatrix, 0);
 		                   
 
