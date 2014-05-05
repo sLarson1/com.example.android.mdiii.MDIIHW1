@@ -99,7 +99,7 @@ public class Fan implements Drawable {
 	
 	@SuppressLint("NewApi")
 	public void drawArm(float[] previousRotationMatrix){
-
+//Don't reuse final matrix?
 		printMatrix(finalMatrix);
 		float[] rotationMatrix = new float[16];
 		float[] newFinalMatrix = new float[16];
