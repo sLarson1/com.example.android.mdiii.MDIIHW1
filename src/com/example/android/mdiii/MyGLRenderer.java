@@ -241,6 +241,8 @@ import com.example.android.mdiii.text.GLText;
 		 		GLES20.glDepthMask(true);
 		 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);	
 
+		 		Image.loadTexture(context);
+		 		
 		 		ground = new Ground();
 //		 		plane = new Plane();
 		 		plane = new Ground();
