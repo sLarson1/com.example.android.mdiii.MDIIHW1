@@ -156,7 +156,7 @@ public void draw(float[] mvpMatrix) {
 	   
  // Add program to OpenGL environment
  GLES20.glUseProgram(mProgram);
-  Is this used anywhere or do we do glBindAttribLocation or lGetAttribLocation
+//  Is this used anywhere or do we do glBindAttribLocation or lGetAttribLocation
  // Associate color array with vertex shader input
  mColorHandle = GLES20.glGetAttribLocation(mProgram, "vColor");
  GLES20.glEnableVertexAttribArray(mColorHandle);

@@ -5,36 +5,37 @@ import android.opengl.GLES20;
 public class SpriteBatch {
 
    //--Constants--//
-	final static int VERTEX_SIZE = 5;                  // Vertex Size (in Components) ie. (X,Y,U,V)
-	//   final static int VERTEX_SIZE = 3;                  // Vertex Size (in Components) ie. (X,Y,U,V)
-   final static int VERTICES_PER_SPRITE = 4;          // Vertices Per Sprite
-   final static int INDICES_PER_SPRITE = 6;           // Indices Per Sprite
+   final static int VERTEX_SIZE = 5;                  // Vertex Size (in Components) ie. (X,Y,U,V)
+   final static int VERTICES_PER_SPRITE = 4;           // Vertices Per Sprite
+   final static int INDICES_PER_SPRITE = 6;            // Indices Per Sprite
 
    //--Members--//
-//   GL10 gl;                                           // GL Instance
    Vertices vertices;                                 // Vertices Instance Used for Rendering
    float[] vertexBuffer;                              // Vertex Buffer
    int bufferIndex;                                   // Vertex Buffer Start Index
    int maxSprites;                                    // Maximum Sprites Allowed in Buffer
    int numSprites;                                    // Number of Sprites Currently in Buffer
 
-   //--Constructor--//
-   // D: prepare the sprite batcher for specified maximum number of sprites
-   // A: gl - the gl instance to use for rendering
-   //    maxSprites - the maximum allowed sprites per batch
+
+   /**
+    * prepare the sprite batcher for specified maximum number of sprites
+    * @param maxSprites - the maximum allowed sprites per batch
+    */
    public SpriteBatch(int maxSprites)  {
-     // this.gl = gl;                                   // Save GL Instance
-      this.vertexBuffer = new float[maxSprites * VERTICES_PER_SPRITE * VERTEX_SIZE];  // Create Vertex Buffer
+	   // Create Vertex Buffer 
+      this.vertexBuffer = new float[maxSprites * VERTICES_PER_SPRITE * VERTEX_SIZE];  
       this.vertices = new Vertices( maxSprites * VERTICES_PER_SPRITE, maxSprites * INDICES_PER_SPRITE, false, true, false );  // Create Rendering Vertices
-     // this.vertices = new Vertices( maxSprites * VERTICES_PER_SPRITE, maxSprites * INDICES_PER_SPRITE, false, false, false );  // Create Rendering Vertices
       this.bufferIndex = 0;                           // Reset Buffer Index
       this.maxSprites = maxSprites;                   // Save Maximum Sprites
       this.numSprites = 0;                            // Clear Sprite Counter
 
-      short[] indices = new short[maxSprites * INDICES_PER_SPRITE];  // Create Temp Index Buffer
+      // Create Temp Index Buffer
+      short[] indices = new short[maxSprites * INDICES_PER_SPRITE];  
       int len = indices.length;                       // Get Index Buffer Length
       short j = 0;                                    // Counter
-      for ( int i = 0; i < len; i+= INDICES_PER_SPRITE, j += VERTICES_PER_SPRITE )  {  // FOR Each Index Set (Per Sprite)
+      
+      // FOR Each Index Set (Per Sprite)
+      for ( int i = 0; i < len; i+= INDICES_PER_SPRITE, j += VERTICES_PER_SPRITE )  {  
          indices[i + 0] = (short)( j + 0 );           // Calculate Index 0
          indices[i + 1] = (short)( j + 1 );           // Calculate Index 1
          indices[i + 2] = (short)( j + 2 );           // Calculate Index 2
@@ -44,47 +45,55 @@ public class SpriteBatch {
       }
       vertices.setIndices( indices, 0, len );         // Set Index Buffer for Rendering
    }
-
-   //--Begin Batch--//
-   // D: signal the start of a batch. set the texture and clear buffer
-   //    NOTE: the overloaded (non-texture) version assumes that the texture is already bound!
-   // A: textureId - the ID of the texture to use for the batch
-   // R: [none]
+   
+   /**
+    * signal the start of a batch. set the texture and clear buffer
+    * NOTE: the overloaded (non-texture) version assumes that the texture is already bound!
+    * @param textureId
+    */
    public void beginBatch(int textureId)  {
-
-
-       //glBindTexture( GL10.GL_TEXTURE_2D, textureId );  // Bind the Texture
       numSprites = 0;                                 // Empty Sprite Counter
       bufferIndex = 0;                                // Reset Buffer Index (Empty)
    }
+   
    public void beginBatch()  {
       numSprites = 0;                                 // Empty Sprite Counter
       bufferIndex = 0;                                // Reset Buffer Index (Empty)
    }
 
-   //--End Batch--//
-   // D: signal the end of a batch. render the batched sprites
-   // A: [none]
-   // R: [none]  
+   
+   /**
+    * signal the end of a batch. render the batched sprites
+    * 
+    */
    public void endBatch()  {
-      if ( numSprites > 0 )  {                        // IF Any Sprites to Render
-         vertices.setVertices( vertexBuffer, 0, bufferIndex );  // Set Vertices from Buffer
-         vertices.bind();                             // Bind Vertices
-         vertices.draw( GLES20.GL_TRIANGLES, 0, numSprites * INDICES_PER_SPRITE );  // Render Batched Sprites
-         vertices.unbind();                           // Unbind Vertices
+	  // IF Any Sprites to Render	   
+      if ( numSprites > 0 )  {                        
+    	 // Set Vertices from Buffer 
+         vertices.setVertices( vertexBuffer, 0, bufferIndex );
+         // Bind Vertices
+         vertices.bind();                             
+         // Render Batched Sprites
+         vertices.draw( GLES20.GL_TRIANGLES, 0, numSprites * INDICES_PER_SPRITE );
+         // Unbind Vertices
+         vertices.unbind();                           
       }
    }
 
-   //--Draw Sprite to Batch--//
-   // D: batch specified sprite to batch. adds vertices for sprite to vertex buffer
-   //    NOTE: MUST be called after beginBatch(), and before endBatch()!
-   //    NOTE: if the batch overflows, this will render the current batch, restart it,
-   //          and then batch this sprite.
-   // A: x, y - the x,y position of the sprite (center)
-   //    width, height - the width and height of the sprite 
-   //    region - the texture region to use for sprite
-   // R: [none]
+
+   /**
+    * batch specified sprite to batch. adds vertices for sprite to vertex buffer
+   		NOTE: MUST be called after beginBatch(), and before endBatch()!
+   		NOTE: if the batch overflows, this will render the current batch, restart it,
+   		and then batch this sprite.
+    * @param x - the x position of the sprite (center)
+    * @param y - the y position of the sprite (center)
+    * @param width - the width of the sprite
+    * @param height - the height of the sprite
+    * @param region- the texture region to use for sprite
+    */
    public void drawSprite(float x, float y, float width, float height, TextureRegion region)  {
+	   
       if ( numSprites == maxSprites )  {              // IF Sprite Buffer is Full
          endBatch();                                  // End Batch
          // NOTE: leave current texture bound!!
