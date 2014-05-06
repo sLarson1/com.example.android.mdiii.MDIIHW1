@@ -5,7 +5,7 @@ import android.opengl.GLES20;
 public class SpriteBatch {
 
    //--Constants--//
-   final static int VERTEX_SIZE = 5;                  // Vertex Size (in Components) ie. (X,Y,U,V)
+   final static int VERTEX_SIZE = 5;                  // Vertex Size (in Components) ie. (X,Y,Z,U,V)
    final static int VERTICES_PER_SPRITE = 4;           // Vertices Per Sprite
    final static int INDICES_PER_SPRITE = 6;            // Indices Per Sprite
 

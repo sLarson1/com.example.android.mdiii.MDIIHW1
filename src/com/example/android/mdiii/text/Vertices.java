@@ -28,9 +28,6 @@ import com.example.android.mdiii.GraphicsUtils;
 
 public class Vertices {
 	    
-    // number of coordinates per vertex in this array
-    static final int COORDS_PER_VERTEX = 3;
-    static final int TEX_COORDS_PER_VERTEX = 2;   
   
     float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
     

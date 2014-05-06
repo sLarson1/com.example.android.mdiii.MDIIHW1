@@ -296,25 +296,6 @@ public class GLText {
       }
    }
 
-   //--Draw Text Centered--//
-   // D: draw text CENTERED at the specified x,y position
-   // A: text - the string to draw
-   //    x, y - the x,y position to draw text at (bottom left of text)
-   // R: the total width of the text that was drawn
-   public float drawC(String text, float x, float y)  {
-      float len = getLength( text );                  // Get Text Length
-      draw( text, x - ( len / 2.0f ), y - ( getCharHeight() / 2.0f ) );  // Draw Text Centered
-      return len;                                     // Return Length
-   }
-   public float drawCX(String text, float x, float y)  {
-      float len = getLength( text );                  // Get Text Length
-      draw( text, x - ( len / 2.0f ), y );            // Draw Text Centered (X-Axis Only)
-      return len;                                     // Return Length
-   }
-   public void drawCY(String text, float x, float y)  {
-      draw( text, x, y - ( getCharHeight() / 2.0f ) );  // Draw Text Centered (Y-Axis Only)
-   }
-
    //--Set Scale--//
    // D: set the scaling to use for the font
    // A: scale - uniform scale for both x and y axis scaling

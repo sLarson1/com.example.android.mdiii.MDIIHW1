@@ -142,6 +142,7 @@ import com.example.android.mdiii.text.GLText;
 		 	private float yIntercept;
 		 	private int numberOfContents;
 		 	private Contents contents;
+			private Image image;
 
 		 	public MyGLRenderer(GLSurfaceView view) {
 
@@ -241,7 +242,6 @@ import com.example.android.mdiii.text.GLText;
 		 		GLES20.glDepthMask(true);
 		 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);	
 
-		 		Image.loadTexture(context);
 		 		
 		 		ground = new Ground();
 //		 		plane = new Plane();
@@ -685,6 +685,14 @@ import com.example.android.mdiii.text.GLText;
 		 	}
 		 	
 		 	private void renderText(){
+		 		GLES20.glDisable( GLES20.GL_DEPTH_TEST );
+		 		GLES20.glEnable( GLES20.GL_BLEND );                   // Enable Alpha Blend
+		 		GLES20.glBlendFunc( GLES20.GL_SRC_ALPHA, GLES20.GL_ZERO );  // Set Alpha Blend Function
+		 		
+//		 		do stuff
+		 		
+		 		GLES20.glDisable( GLES20.GL_BLEND );  
+		 		GLES20.glEnable( GLES20.GL_DEPTH_TEST );
 		 /*
 		 		// draw the text centered
 		 		canvas.drawText("Hello World", 16,112, textPaint);
@@ -716,7 +724,10 @@ import com.example.android.mdiii.text.GLText;
 		 	public void onSurfaceChanged(GL10 unused, int width, int height) {
 
 		         glText = new GLText( context.getAssets(), width, height );
-		         glText.load( "Roboto-Regular.ttf", 14, 2, 2 );		
+		         glText.load( "Roboto-Regular.ttf", 14, 2, 2 );
+		         
+		         image = new Image();
+		         image.loadTexture(context);
 		 		
 		 		// Adjust the viewport based on geometry changes,
 		 		// such as screen rotation

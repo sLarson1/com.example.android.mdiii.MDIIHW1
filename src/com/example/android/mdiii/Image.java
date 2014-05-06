@@ -3,6 +3,11 @@
  */
 package com.example.android.mdiii;
 
+import static android.opengl.GLES20.GL_FLOAT;
+import static android.opengl.GLES20.glEnableVertexAttribArray;
+import static android.opengl.GLES20.glGetAttribLocation;
+import static android.opengl.GLES20.glVertexAttribPointer;
+
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -13,6 +18,7 @@ import javax.microedition.khronos.opengles.GL10;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 
@@ -41,8 +47,8 @@ public class Image implements Drawable {
 	        "  vertex_color = vColor;" +
 	        "  vTexCoord = vertex_TexCoord"+
 	        "}";
-	    
-
+You must put in sampler!!
+	    uniform sampler2D uSampler;
 	    private final String fragmentShaderCode =
 	        "precision mediump float;" +
 			  "varying vec4 vertex_color;      \n" +
@@ -56,6 +62,8 @@ public class Image implements Drawable {
 	    private int mPositionHandle;
 	    private int mColorHandle;
 	    private int mTextureUniformHandle;
+
+/* these are not there */
 		private int mTextureCoordinateHandle;
 		private int mTextureCoordSize;
 		private int mTextureDataHandle;
@@ -63,8 +71,9 @@ public class Image implements Drawable {
 
 	    // number of coordinates per vertex in this array
 	    static final int COORDS_PER_VERTEX = 3;
+		static final int COORDS_PER_TEXTURE = 2;
 
-	    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+	    private final int vertexStride = (COORDS_PER_VERTEX +COORDS_PER_TEXTURE) * 4; // 4 bytes per vertex
 	    float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
 	    
 	    //	Use Triangle Strip - so only need 4 vertices
@@ -83,7 +92,8 @@ public class Image implements Drawable {
 				0.0f, 0.0f,		// bottom left	
 				1.0f, 1.0f,		// top right
 				1.0f, 0.0f		// bottom right
-		};	    
+		};
+		private int textureId;	    
 	    
 	    static float vColor[] =
 	        {
@@ -98,6 +108,7 @@ public class Image implements Drawable {
 	      static short groundIndices[] =
 	          {
 	             0, 1, 2,	//	v1, v2, v3
+//				2,3,0?	             
 	             2, 1, 3		//	v3, v2, v4
 	          };      
 	      
@@ -152,66 +163,86 @@ public class Image implements Drawable {
 		}
 
 
-public void draw(float[] mvpMatrix) { 
-	   
- // Add program to OpenGL environment
- GLES20.glUseProgram(mProgram);
-//  Is this used anywhere or do we do glBindAttribLocation or lGetAttribLocation
- // Associate color array with vertex shader input
- mColorHandle = GLES20.glGetAttribLocation(mProgram, "vColor");
- GLES20.glEnableVertexAttribArray(mColorHandle);
- GLES20.glVertexAttribPointer(mColorHandle, COORDS_PER_VERTEX,
-                              GLES20.GL_FLOAT, false,
-                              vertexStride, mColorBuffer);
- 
+    public void draw(float[] mvpMatrix) { 
+     
+     // Bind the Texture	
+     GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+     GLES20.glBindTexture( GLES20.GL_TEXTURE_2D, textureId );	   
+     // Add program to OpenGL environment
+     GLES20.glUseProgram(mProgram);
+    //  Is this used anywhere or do we do glBindAttribLocation or lGetAttribLocation
+     // Associate color array with vertex shader input
+     mColorHandle = GLES20.glGetAttribLocation(mProgram, "vColor");
+     GLES20.glEnableVertexAttribArray(mColorHandle);
+     GLES20.glVertexAttribPointer(mColorHandle, COORDS_PER_VERTEX,
+                                  GLES20.GL_FLOAT, false,
+                                  vertexStride, mColorBuffer);
+     
+    
+     // hook up  vertex array with vertex shader input
+     mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
+     MyGLRenderer.checkGlError("glGetAttribLocation");
+     GLES20.glEnableVertexAttribArray(mPositionHandle);
+     GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX,
+                                  GLES20.GL_FLOAT, false,
+                                  vertexStride, mVertexBuffer);
+    
+     
+     mTextureCoordinateHandle = glGetAttribLocation(mProgram, "vTexCoord");
+     GraphicsUtils.checkGlError("glGetAttribLocation");
+     glEnableVertexAttribArray(mTextureCoordinateHandle);
+     // &vertexData[0].normal
+     glVertexAttribPointer(mTextureCoordinateHandle,COORDS_PER_TEXTURE ,
+                                  GL_FLOAT, false,
+                                  vertexStride, mTextureBuffer); 
+    
+     
+     // send matrix to vertex shader
+     mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
+     MyGLRenderer.checkGlError("glGetUniformLocation");
+     GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
+     MyGLRenderer.checkGlError("glUniformMatrix4fv"); 
+    
+    
+     // Draw the ground
+    // GLES20.glDrawElements(GLES20.GL_TRIANGLES, groundIndices.length,
+    //                       GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+     //Use triangle strip instead of regular triangles
+     GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, groundIndices.length,
+             GLES20.GL_UNSIGNED_SHORT, drawListBuffer); 
+     
+     MyGLRenderer.checkGlError("glDrawElements");
+    
+     // Disable vertex array
+     GLES20.glDisableVertexAttribArray(mPositionHandle);
+    
+    }
 
- // hook up  vertex array with vertex shader input
- mPositionHandle = GLES20.glGetAttribLocation(mProgram, "vPosition");
- MyGLRenderer.checkGlError("glGetAttribLocation");
- GLES20.glEnableVertexAttribArray(mPositionHandle);
- GLES20.glVertexAttribPointer(mPositionHandle, COORDS_PER_VERTEX,
-                              GLES20.GL_FLOAT, false,
-                              vertexStride, mVertexBuffer);
- 
- // send matrix to vertex shader
- mMVPMatrixHandle = GLES20.glGetUniformLocation(mProgram, "uMVPMatrix");
- MyGLRenderer.checkGlError("glGetUniformLocation");
- GLES20.glUniformMatrix4fv(mMVPMatrixHandle, 1, false, mvpMatrix, 0);
- MyGLRenderer.checkGlError("glUniformMatrix4fv"); 
-
-
- // Draw the ground
-// GLES20.glDrawElements(GLES20.GL_TRIANGLES, groundIndices.length,
-//                       GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
- //Use triangle strip instead of regular triangles
- GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, groundIndices.length,
-         GLES20.GL_UNSIGNED_SHORT, drawListBuffer); 
- 
- MyGLRenderer.checkGlError("glDrawElements");
-
- // Disable vertex array
- GLES20.glDisableVertexAttribArray(mPositionHandle);
-
-}
-
-public static void loadTexture(Context context){
+public void loadTexture(Context context){
 	Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
 			R.drawable.background_small);
 	
+	Canvas canvas = new Canvas(bitmap);
 	
-    int[] texturePointer =  new int[1]; 
+    int[] texturePointers =  new int[1]; 
 
-    GLES20.glGenTextures(1, texturePointer, 0);
+    GLES20.glGenTextures(1, texturePointers, 0);
+    textureId = texturePointers[0];
 
-	GLES20.glBindTexture(GL10.GL_TEXTURE_2D, texturePointer[0]);
+	GLES20.glBindTexture(GL10.GL_TEXTURE_2D, textureId);
 
 	// create nearest filtered texture
 	GLES20.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MIN_FILTER, GL10.GL_NEAREST);
 	GLES20.glTexParameterf(GL10.GL_TEXTURE_2D, GL10.GL_TEXTURE_MAG_FILTER, GL10.GL_LINEAR);
 
+//do we need these?	
+//    GLES20.glTexParameterf( GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S, GLES20.GL_CLAMP_TO_EDGE );  // Set U Wrapping
+//    GLES20.glTexParameterf( GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE );  // Set V Wrapping	
+
 
 	// Use Android GLUtils to specify a two-dimensional texture image from our bitmap 
-	GLUtils.texImage2D(GL10.GL_TEXTURE_2D, 0, bitmap, 0);
+	GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
+    GLES20.glBindTexture( GLES20.GL_TEXTURE_2D, 0 );      	 // Unbind Texture	
 
 	// Clean up
 	bitmap.recycle();			
