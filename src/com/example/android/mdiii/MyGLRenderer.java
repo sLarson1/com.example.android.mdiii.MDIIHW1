@@ -60,6 +60,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
+import android.opengl.GLUtils;
 import android.opengl.Matrix;
 import android.util.Log;
 
@@ -296,13 +297,15 @@ import com.example.android.mdiii.text.GLText;
 		 		GLES20.glDisable( GLES20.GL_DEPTH_TEST );
 		 		GLES20.glEnable( GLES20.GL_BLEND );                   // Enable Alpha Blend
 		 		GLES20.glBlendFunc( GLES20.GL_SRC_ALPHA, GLES20.GL_ZERO );  // Set Alpha Blend Function
-
+/*
 		 		glText.begin( 1.0f, 1.0f, 1.0f, 1.0f );         // Begin Text Rendering (Set Color WHITE)
 		 		  
 //		 		glText.draw("Z:" +this.cameraZ +" pitch:"+pitch +" " +pitchMessage +"\nSpeed:"+cameraSpeed, 50, 50 );         
 		 		glText.draw("PUT BACK HALL CONTENTS!  Also TURN ON COLLISION DETECTION, Turn ON GRAVITY", 50, 50 );         
 
 		 		glText.end();     // End Text Rendering
+*/		 		
+		 		image.draw(mMVPMatrix);
 
 		 		GLES20.glDisable( GLES20.GL_BLEND );  
 		 		GLES20.glEnable( GLES20.GL_DEPTH_TEST );		
@@ -782,10 +785,16 @@ import com.example.android.mdiii.text.GLText;
 		 	 */
 		 	public static void checkGlError(String glOperation) {
 		 		int error;
+		 		String errors = "";		 	
 		 		while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
+		 			errors += error +",";//GLUtils.getEGLErrorString(error);
+		 			//Log.e(TAG, glOperation + ": glError " + error +":"+errorString);
 		 			Log.e(TAG, glOperation + ": glError " + error);
-		 			throw new RuntimeException(glOperation + ": glError " + error);
+//		 			throw new RuntimeException(glOperation + ": glError " + error +":"+errorString);
+		 			
 		 		}
+		 		if(!errors.isEmpty())
+		 			throw new RuntimeException(glOperation + ": glError " + errors);
 		 	}
 
 		 	public float getmDx() {
