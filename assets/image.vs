@@ -16,4 +16,4 @@
 	  gl_Position = uMVPMatrix * a_Position;
 	  v_Color = a_Color;
 	  v_TexCoord = a_TexCoord;
-	};
+	}

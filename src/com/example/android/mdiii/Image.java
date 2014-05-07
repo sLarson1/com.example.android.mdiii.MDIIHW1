@@ -151,7 +151,7 @@ public class Image implements Drawable {
 		  
 		vertexShaderCode = GraphicsUtils.getShaderCode("image.vs");
 		fragmentShaderCode = GraphicsUtils.getShaderCode("image.ps");         
-		Log.v(TAG, "shaderCode:"+vertexShaderCode);
+		Log.v(TAG, "shaderCode:"+vertexShaderCode +"\n");
 		Log.v(TAG, "fragmentCode:"+fragmentShaderCode);
 		
 		// prepare shaders and OpenGL program
@@ -161,6 +161,10 @@ public class Image implements Drawable {
 													 fragmentShaderCode);
 		
 		mProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
+		
+		if(mProgram ==0)
+			throw new RuntimeException("GLES20.glCreateProgram()");
+		
 		GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
 		MyGLRenderer.checkGlError("glAttachShader");
 		
@@ -169,23 +173,22 @@ public class Image implements Drawable {
 
 		GLES20.glLinkProgram(mProgram);                  // create OpenGL program executables
 		MyGLRenderer.checkGlError("glLinkProgram");
-
-is gltext somehow overriding my shader compilation?		
 		
-	      // %%% more error checking
-	      int[] tbuffer = new int[1];
-	      GLES20.glGetProgramiv(mProgram, GLES20.GL_LINK_STATUS, tbuffer, 0);
-	      if(tbuffer[0] == GLES20.GL_FALSE) {
-	          Log.e("ShaderHelper", GLES20.glGetProgramInfoLog(mProgram));
-	          GLES20.glDeleteProgram(mProgram);
-	         // return -1;
-	          throw new RuntimeException("error with shader!");
-	      }		
+		// %%% more error checking
+		int[] linkStatus = new int[1];
+		GLES20.glGetProgramiv(mProgram, GLES20.GL_LINK_STATUS, linkStatus, 0);
+		Log.v(TAG, "glGetProgramiv");
+		if(linkStatus[0] == GLES20.GL_FALSE) {
+			Log.e("Image()", GLES20.glGetProgramInfoLog(mProgram));
+			GLES20.glDeleteProgram(mProgram);
+//			throw new RuntimeException("error with shader!");
+		}		
 	}
 
 
     public void draw(float[] mvpMatrix) { 
      
+    	
 		// Bind the Texture	
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		MyGLRenderer.checkGlError("glActiveTexture");
@@ -256,9 +259,13 @@ is gltext somehow overriding my shader compilation?
    public void loadTexture(Context context){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;
+        options.inScaled = false;
         
-		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),
-				R.drawable.background_small, options);
+//		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.background_small, options);
+        //	good
+        //		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.explosion_big, options);
+		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.explosion_icon, options);
+//		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.explosion1, options);
 		
 		Canvas canvas = new Canvas(bitmap);
 		
