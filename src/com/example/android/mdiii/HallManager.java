@@ -91,14 +91,16 @@ public class HallManager {
 		init();
 	}
 
-
+	@Deprecated
+	//move block below into Cotents Factory and give initialize method
 	private void init(){
 		float hallLength = (endZ - startZ)/numberOfHalls;
 		Log.v(TAG, "init() halllength"+hallLength);		
 		this.halls = new Hall[numberOfHalls];
 		currentHallIndex = 0;
 		currentHallZ = 0f;
-		
+
+{
 		contentsMap = new HashMap<Coord, Drawable>();
 		Coord coord = new Coord(0f, 0f, 8.5f );
 		Coord coord2 = new Coord(0f, 0f, 13.0f );
@@ -121,7 +123,7 @@ public class HallManager {
 	
 		contentsList = new ArrayList<Contents>();
 		contentsList.add(new Contents(this, contentsMap, wallMatrix, mMVPMatrix, finalWallMatrix));
-
+}
 		for(int i=0; i< numberOfHalls; i++){
 			if(i==0){
 				halls[i] = new Hall(startX, endX, startY, endY, startZ, startZ + hallLength);
@@ -263,6 +265,20 @@ public class HallManager {
 		return interactiveObjectMap;
 	}
    
+	/**
+	 * @return the wallXOffset
+	 */
+	public float getWallXOffset() {
+		return wallXOffset;
+	}
+
+	/**
+	 * @return the wallYOffset
+	 */
+	public float getWallYOffset() {
+		return wallYOffset;
+	}
+
 	public class Hall {	
 	
 	private static final String TAG = "Hall";

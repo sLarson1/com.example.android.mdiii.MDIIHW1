@@ -34,6 +34,7 @@ import android.util.Log;
 public class Image implements Drawable {
 
 	private static final String TAG = "Image";
+	private boolean isFinished;
 	private final FloatBuffer mVertexBuffer;
     private final FloatBuffer mColorBuffer;
     private final FloatBuffer mTextureBuffer;
@@ -118,7 +119,8 @@ public class Image implements Drawable {
 	      
 	      
 	public Image( ) {
-	
+		
+		isFinished = false;
 		// Buffers to be passed to gl*Pointer() functions must be
 		// direct, i.e., they must be placed on the native heap
 		// where the garbage collector cannot move them.
@@ -262,9 +264,9 @@ public class Image implements Drawable {
         options.inScaled = false;
         
 //		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.background_small, options);
-        //	good
-        //		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.explosion_big, options);
-		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.explosion_icon, options);
+        //	kind of good
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.explosion_big, options);
+//		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.explosion_icon, options);
 //		Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(),R.drawable.explosion1, options);
 		
 		Canvas canvas = new Canvas(bitmap);
@@ -292,6 +294,25 @@ public class Image implements Drawable {
 		MyGLRenderer.checkGlError("loadTexture");
 		// Clean up
 		bitmap.recycle();			
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.example.android.mdiii.Drawable#isFinished()
+	 */
+	@Override
+	public boolean isFinished() {
+		return isFinished;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see com.example.android.mdiii.Drawable#draw(com.example.android.mdiii.Coord, float[])
+	 */
+	@Override
+	public void draw(Coord coord, float[] mvpMatrix) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	

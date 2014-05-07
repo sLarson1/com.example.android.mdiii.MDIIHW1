@@ -104,6 +104,7 @@ public class Contents {
 			}
 			
 		}
+		cleanUp();
 	}
 
 
@@ -111,5 +112,7 @@ public class Contents {
 		return mapCoordToDrawable;
 	}
 	
-	
+	private boolean cleanUp() {
+		return false;
+	}
 }

@@ -20,6 +20,7 @@ import android.util.Log;
  */
 public class Fan implements Drawable {
 	
+	private boolean isFinished;
 	private final float[] baseMatrix = new float[16];
 	private final float[] armlMatrix = new float[16]; 
 	private final float[] bladeMatrix = new float[16];
@@ -52,6 +53,7 @@ public class Fan implements Drawable {
 	
 
 	public Fan(Coord rootCoordinate, float[] objectMatrix, float[] mMVPMatrix, float[] finalMatrix) {
+		isFinished = false;
 		this.objectMatrix = objectMatrix;
 		this.mMVPMatrix = mMVPMatrix;
 		this.finalMatrix = finalMatrix;
@@ -182,6 +184,25 @@ public class Fan implements Drawable {
 		drawBase();
 	}
 	
+	
+	
+	/* (non-Javadoc)
+	 * @see com.example.android.mdiii.Drawable#isFinished()
+	 */
+	@Override
+	public boolean isFinished() {
+		return isFinished;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.example.android.mdiii.Drawable#draw(com.example.android.mdiii.Coord, float[])
+	 */
+	@Override
+	public void draw(Coord coord, float[] mvpMatrix) {
+		// TODO Auto-generated method stub
+		
+	}
+
 	private void printMatrix(float[] matrix){
 		StringBuilder sb = new StringBuilder();
 		sb.append("[" +matrix[0] +"," +matrix[1] +"," +matrix[2] +"," +matrix[3] +",");

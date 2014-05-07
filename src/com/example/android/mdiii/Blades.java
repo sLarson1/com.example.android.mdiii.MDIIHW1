@@ -17,7 +17,7 @@ import android.opengl.GLUtils;
 
 public class Blades implements Drawable{
 
-	
+	private boolean isFinished;
 	   private final FloatBuffer mVertexBuffer;
 	   private final FloatBuffer mColorBuffer;
 
@@ -115,6 +115,7 @@ public class Blades implements Drawable{
 	      
 	      
    public Blades() {
+	   isFinished = false;
   
       // Buffers to be passed to gl*Pointer() functions must be
       // direct, i.e., they must be placed on the native heap
@@ -194,6 +195,27 @@ public class Blades implements Drawable{
        // Disable vertex array
        GLES20.glDisableVertexAttribArray(mPositionHandle);
 
-  }	
+  }
+
+
+/* (non-Javadoc)
+ * @see com.example.android.mdiii.Drawable#isFinished()
+ */
+@Override
+public boolean isFinished() {
+	return isFinished;
+}
+
+
+/* (non-Javadoc)
+ * @see com.example.android.mdiii.Drawable#draw(com.example.android.mdiii.Coord, float[])
+ */
+@Override
+public void draw(Coord coord, float[] mvpMatrix) {
+	// TODO Auto-generated method stub
+	
+}	
+   
+   
 	
 }

@@ -54,6 +54,7 @@ public class Plane implements Drawable{
 
 	    private final int vertexStride = COORDS_PER_VERTEX * 4; // 4 bytes per vertex
 	    float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
+		private boolean isFinished;
 	    
 	    static float vertices[] =
 	        {
@@ -129,7 +130,7 @@ public class Plane implements Drawable{
 	      
 	      
    public Plane() {
-  
+	   isFinished = false;
       // Buffers to be passed to gl*Pointer() functions must be
       // direct, i.e., they must be placed on the native heap
       // where the garbage collector cannot move them.
@@ -208,6 +209,27 @@ public class Plane implements Drawable{
        // Disable vertex array
        GLES20.glDisableVertexAttribArray(mPositionHandle);
 
-  }	
+  }
+
+
+/* (non-Javadoc)
+ * @see com.example.android.mdiii.Drawable#isFinished()
+ */
+@Override
+public boolean isFinished() {
+	// TODO Auto-generated method stub
+	return isFinished;
+}
+
+
+/* (non-Javadoc)
+ * @see com.example.android.mdiii.Drawable#draw(com.example.android.mdiii.Coord, float[])
+ */
+@Override
+public void draw(Coord coord, float[] mvpMatrix) {
+	// TODO Auto-generated method stub
 	
+}	
+
+   
 }
