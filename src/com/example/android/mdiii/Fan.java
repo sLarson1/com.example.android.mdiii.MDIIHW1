@@ -120,7 +120,8 @@ public class Fan implements Drawable {
 		//	rotate about Z
         Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
         
-        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 0, 0, 1);
+//        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 0, 0, 1);
+        
         /*       Matrix.rotateM(bladeMatrix, 0, bladeAngle, 1, 0, 0);
 */	      
         
@@ -138,8 +139,22 @@ public class Fan implements Drawable {
         //	draw arm
         arm.draw(finalMatrix);
         changeArmAngle();
-*/	
-        Matrix.multiplyMM(newFinalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
+*/
+  
+        
+        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
+        
+        //	draw arm
+        arm.draw(finalMatrix);
+        changeArmAngle();        
+        
+/*        
+        Matrix.multiplyMM(newFinalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);        
+        arm.draw(newFinalMatrix);
+        changeArmAngle();
+*/        
+        
+//        Matrix.multiplyMM(newFinalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
         
 //		blades.draw(newFinalMatrix);			
 		

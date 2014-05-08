@@ -20,18 +20,18 @@ public class Shooter implements Drawable {
 	private Coord movementRate;
 	private float collisionPadding;
 	private Drawable drawable;
-	private float[] objectMatrix = new float[16];
+	private float[] mMVPMatrix;
+	
 	
 	
 	
 
-	public Shooter(HallManager hallManager, Coord position, Coord movementRate) {
+	public Shooter(HallManager hallManager, Coord position, Coord movementRate, float[] mMVPMatrix) {
 		super();
 		this.hallManager = hallManager;
 		this.position = position;
-		this.movementRate = movementRate;
-		
-		Matrix.setIdentityM(objectMatrix, 0);
+		this.movementRate = movementRate;		
+		this.mMVPMatrix = mMVPMatrix;
 		drawable = new Ground();
 	}
 
@@ -44,19 +44,23 @@ public class Shooter implements Drawable {
 		Log.e(TAG , "drawing entity:"+drawable);
 		
 		if(!hitWall()) {	        
+			float[] movementMatrix= new float[16];
+			Matrix.setIdentityM(movementMatrix, 0);
+
+			float[] shooterMatrix = new float[16];
+			Matrix.setIdentityM(shooterMatrix, 0);
 			
-			float[] finalMatrix = new float[16];
-			Matrix.setIdentityM(finalMatrix, 0);
-			
-	        Matrix.translateM(objectMatrix, 0, position.getX(), position.getY(), position.getZ() );
+	        Matrix.translateM(movementMatrix, 0, position.getX(), position.getY(), position.getZ() );
 	        
-	        Log.e(TAG, "draw(objectMatrix, 0,  coord.getX():" + position.getX()+ ", baseCoordinate.getY():" + position.getY() + ", baseCoordinate.getZ():" + position.getZ() + " )");              
-	        Matrix.multiplyMM(finalMatrix, 0, mvpMatrix, 0,objectMatrix, 0);
+	        Log.e(TAG, "draw(objectMatrix, 0,  position.getX():" + position.getX()+ ", position.getY():" + position.getY() + ", position.getZ():" + position.getZ() + " )");              
+	        Matrix.multiplyMM(shooterMatrix, 0, mMVPMatrix, 0,movementMatrix, 0);
 	        
-	        drawable.draw(finalMatrix);		
+	        drawable.draw(shooterMatrix);		
 			move();
+			this.hallManager.renderer.pitchMessage = "DRAW SHOOTER!";
 		}else{
 			Log.e(TAG, "draw failed - hit wall");
+			this.hallManager.renderer.pitchMessage = "SHOOTER HIT WALL";
 		}
 
 	}

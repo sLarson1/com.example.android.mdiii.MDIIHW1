@@ -241,7 +241,6 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);	
     
     	
-    	ground = new Ground();
     //		 		plane = new Plane();
     	plane = new Ground();
     	hallManager = new HallManager(this, 3, 10.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 50.0f, this.objectMatrix, this.objectFinalMatrix, this.mMVPMatrix, this.wallXOffset, this.wallYOffset);
@@ -294,16 +293,16 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	GLES20.glDisable( GLES20.GL_DEPTH_TEST );
     	GLES20.glEnable( GLES20.GL_BLEND );                   // Enable Alpha Blend
     	GLES20.glBlendFunc( GLES20.GL_SRC_ALPHA, GLES20.GL_ZERO );  // Set Alpha Blend Function
-    /*
+    
     	glText.begin( 1.0f, 1.0f, 1.0f, 1.0f );         // Begin Text Rendering (Set Color WHITE)
     	  
     //		 		glText.draw("Z:" +this.cameraZ +" pitch:"+pitch +" " +pitchMessage +"\nSpeed:"+cameraSpeed, 50, 50 );         
     	glText.draw("PUT BACK HALL CONTENTS!  Also TURN ON COLLISION DETECTION, Turn ON GRAVITY", 50, 50 );         
     
     	glText.end();     // End Text Rendering
-    */		 		
-    //	image.draw(mMVPMatrix);
-    	image.draw(objectFinalMatrix);
+		 		
+
+//    	image.draw(objectFinalMatrix);
     
     	GLES20.glDisable( GLES20.GL_BLEND );  
     	GLES20.glEnable( GLES20.GL_DEPTH_TEST );		
@@ -723,10 +722,10 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     
     @Override
     public void onSurfaceChanged(GL10 unused, int width, int height) {
-    /*
+    /**/
     	 glText = new GLText( context.getAssets(), width, height );
     	 glText.load( "Roboto-Regular.ttf", 14, 2, 2 );
-    */	 
+    	 
     	image = new Image();
     	image.loadTexture(context);
     	
