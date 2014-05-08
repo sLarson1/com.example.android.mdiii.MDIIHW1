@@ -213,3 +213,5 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+gen/com/example/android/mdiii/R.java
+gen/com/example/android/mdiii/BuildConfig.java

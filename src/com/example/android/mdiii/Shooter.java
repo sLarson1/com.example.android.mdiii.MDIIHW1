@@ -3,6 +3,9 @@
  */
 package com.example.android.mdiii;
 
+import android.opengl.Matrix;
+import android.util.Log;
+
 /**
  * @author slarson@twia.org
  * @since May 7, 2014
@@ -10,11 +13,14 @@ package com.example.android.mdiii;
  */
 public class Shooter implements Drawable {
 
+	private final static String TAG = "Shooter";
 	private HallManager hallManager;
 	private boolean isFinished;
 	private Coord position;
 	private Coord movementRate;
 	private float collisionPadding;
+	private Drawable drawable;
+	private float[] objectMatrix = new float[16];
 	
 	
 	
@@ -24,9 +30,10 @@ public class Shooter implements Drawable {
 		this.hallManager = hallManager;
 		this.position = position;
 		this.movementRate = movementRate;
+		
+		Matrix.setIdentityM(objectMatrix, 0);
+		drawable = new Ground();
 	}
-
-
 
 
 	/* (non-Javadoc)
@@ -34,14 +41,30 @@ public class Shooter implements Drawable {
 	 */
 	@Override
 	public void draw(Coord coord, float[] mvpMatrix) {
-		if(!hitWall()) {
+		Log.e(TAG , "drawing entity:"+drawable);
+		
+		if(!hitWall()) {	        
 			
+			float[] finalMatrix = new float[16];
+			Matrix.setIdentityM(finalMatrix, 0);
+			
+	        Matrix.translateM(objectMatrix, 0, position.getX(), position.getY(), position.getZ() );
+	        
+	        Log.e(TAG, "draw(objectMatrix, 0,  coord.getX():" + position.getX()+ ", baseCoordinate.getY():" + position.getY() + ", baseCoordinate.getZ():" + position.getZ() + " )");              
+	        Matrix.multiplyMM(finalMatrix, 0, mvpMatrix, 0,objectMatrix, 0);
+	        
+	        drawable.draw(finalMatrix);		
+			move();
+		}else{
+			Log.e(TAG, "draw failed - hit wall");
 		}
 
 	}
 
 	private boolean hitWall() {
-		
+		Log.e(TAG, "hitWall() movementRate.getX():"
+				+movementRate.getX()+" collisionPadding:"+collisionPadding
+				+" hallManager.getWallXOffset():"+hallManager.getWallXOffset());		
 		if(
 			((movementRate.getX() < 0.0) 
 				&& (position.getX() + collisionPadding) <= -hallManager.getWallXOffset())
@@ -49,11 +72,18 @@ public class Shooter implements Drawable {
 			((movementRate.getX() > 0.0) 
 					&& (position.getX() - collisionPadding) >= hallManager.getWallXOffset())
 				){
+			Log.e(TAG, "collision detected!");
 			isFinished = true;
 			return isFinished;			
 		}else {
 			return false;
 		}
+	}
+	
+	private void move(){
+		position.setX(position.getX() + movementRate.getX());
+		position.setY(position.getY() + movementRate.getY());
+		position.setZ(position.getZ() + movementRate.getZ());
 	}
 	/* (non-Javadoc)
 	 * @see com.example.android.mdiii.Drawable#draw(float[])

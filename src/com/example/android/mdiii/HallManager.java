@@ -103,20 +103,21 @@ public class HallManager {
 {
 		contentsMap = new HashMap<Coord, Drawable>();
 		Coord coord = new Coord(0f, 0f, 8.5f );
+		Coord coord1 = new Coord(0f, 0f, 10.5f );
 		Coord coord2 = new Coord(0f, 0f, 13.0f );
 		Coord coord3 = new Coord(0f, 0f, 19.0f );
 		Coord coord4 = new Coord(0f, 0f, 25.0f );
 		Coord coord5 = new Coord(0f, 0f, 30.0f );
 		Drawable obj = new Ground();
-//		Drawable obj = new Fan(coord, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
+		Drawable obj1 = new Shooter(this, coord, new Coord(0.001f, 0, 0));
 		Drawable obj2 = new Fan(coord2, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj3 = new Fan(coord3, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj4 = new Fan(coord4, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj5 = new Fan(coord5, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		
 		contentsMap.put(coord, obj);
-/**/  	    
-		 contentsMap.put(coord2, obj2);
+		contentsMap.put(coord1, obj1);
+		contentsMap.put(coord2, obj2);
 	    contentsMap.put(coord3, obj3);
 	    contentsMap.put(coord4, obj4);
 	    contentsMap.put(coord5, obj5);
@@ -146,21 +147,21 @@ public class HallManager {
 				&& drawEndlessVerticalWall(currentZ, -1.0f * HallManager.this.wallXOffset)
 	            && drawEndlessHorizontalWall(currentZ, HallManager.this.wallYOffset)
 	            && drawEndlessHorizontalWall(currentZ, -1.0f * HallManager.this.wallYOffset)){
- 		
+			
 			boolean results = false;
 			// Now draw hall content
 			for(int i = 0; i<this.numberOfHalls ; i++){
 		
-				boolean drawGood = halls[i].drawHallContents(currentZ);
-				if(drawGood){
-					Log.v(TAG, "draw() - GOOD! hallIndex:"+i +" currentZ:"+currentZ);
-	//			if(halls[i].draw(currentZ)){
-					results = true;
-					break;
-				}else{
-					Log.v(TAG, "draw() - BAD! hallIndex:"+i +" currentZ:"+currentZ); 
-				}
-					
+    			boolean drawGood = halls[i].drawHallContents(currentZ);
+    			if(drawGood){
+    				Log.v(TAG, "draw() - GOOD! hallIndex:"+i +" currentZ:"+currentZ);
+    //			if(halls[i].draw(currentZ)){
+    				results = true;
+    				break;
+    			}else{
+    				Log.v(TAG, "draw() - BAD! hallIndex:"+i +" currentZ:"+currentZ); 
+    			}
+    				
 			}
 			
 			if(results){
@@ -169,12 +170,10 @@ public class HallManager {
 			}
 			Log.v(TAG, "draw("+currentZ +") DID NOT DRAW!!");
 			return results;
-			}else{
-				return false;
-			}
-		
-
-	}
+		}else{
+			return false;
+		}
+	}		
 	
 
 	public List<Contents> getContents() {

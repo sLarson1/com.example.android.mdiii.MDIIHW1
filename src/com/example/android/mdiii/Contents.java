@@ -101,6 +101,8 @@ public class Contents {
 				this.draw(entry.getKey(), entry.getValue());
 			}else if(drawable instanceof Fan){
 				drawable.draw(null);
+			}else if(drawable instanceof Shooter){
+				drawable.draw(entry.getKey(), mMVPMatrix);
 			}
 			
 		}
