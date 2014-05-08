@@ -100,14 +100,16 @@ public class HallManager {
 
 {
 		contentsMap = new HashMap<Coord, Drawable>();
-		Coord coord = new Coord(0f, 0f, 8.5f );
-		Coord coord1 = new Coord(0f, 0f, 10.5f );
-		Coord coord2 = new Coord(0f, 0f, 13.0f );
+		Coord coord = new Coord(0f, -0.3f, 6.5f );
+		Coord coord1 = new Coord(0f, 0f, 8.0f );
+		Coord coord2 = new Coord(0f, 0f, 16.0f );
 		Coord coord3 = new Coord(0f, 0f, 19.0f );
 		Coord coord4 = new Coord(0f, 0f, 25.0f );
 		Coord coord5 = new Coord(0f, 0f, 30.0f );
+		//	vent
 		Drawable obj = new Ground();
-		Drawable obj1 = new Shooter(this, coord, new Coord(0.002f, 0, 0),this.mMVPMatrix);
+		
+		Drawable obj1 = new Shooter(this, coord1, new Coord(0.0023f, 0, 0),this.mMVPMatrix);
 		Drawable obj2 = new Fan(coord2, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj3 = new Fan(coord3, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj4 = new Fan(coord4, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);

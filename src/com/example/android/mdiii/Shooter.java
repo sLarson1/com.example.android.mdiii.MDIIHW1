@@ -1,3 +1,14 @@
+/*
+for collision detection
+draw line from center of plane to center of shooter
+if length(line) > radius of plane + radius of shooter
+then
+	no collision
+else there is a collision
+change shape to blade or cube from Lesson 4?
+fix fan
+make plane the plane and not ground
+*/
 /**
  * 
  */
@@ -15,12 +26,14 @@ public class Shooter implements Drawable {
 
 	private final static String TAG = "Shooter";
 	private HallManager hallManager;
-	private boolean isFinished;
+	private Drawable drawable;
+	private float[] mMVPMatrix;
 	private Coord position;
 	private Coord movementRate;
 	private float collisionPadding;
-	private Drawable drawable;
-	private float[] mMVPMatrix;
+	private float shooterHeight;
+	private float shooterWidth;
+	private boolean isFinished;
 	
 	
 	
@@ -32,7 +45,11 @@ public class Shooter implements Drawable {
 		this.position = position;
 		this.movementRate = movementRate;		
 		this.mMVPMatrix = mMVPMatrix;
+		collisionPadding = 0.0f;
 		drawable = new Ground();
+		
+		shooterWidth = 0.5f;
+		shooterHeight = 0.25f;
 	}
 
 
@@ -41,13 +58,13 @@ public class Shooter implements Drawable {
 	 */
 	@Override
 	public void draw(Coord coord, float[] mvpMatrix) {
-		Log.e(TAG , "drawing entity:"+drawable);
+		Log.e(TAG , "drawing entity:"+drawable);		
 		
 		if(!hitWall()) {	        
 			float[] movementMatrix= new float[16];
-			Matrix.setIdentityM(movementMatrix, 0);
-
 			float[] shooterMatrix = new float[16];
+
+			Matrix.setIdentityM(movementMatrix, 0);
 			Matrix.setIdentityM(shooterMatrix, 0);
 			
 	        Matrix.translateM(movementMatrix, 0, position.getX(), position.getY(), position.getZ() );
@@ -57,10 +74,12 @@ public class Shooter implements Drawable {
 	        
 	        drawable.draw(shooterMatrix);		
 			move();
-			this.hallManager.renderer.pitchMessage = "DRAW SHOOTER!";
+//			this.hallManager.renderer.pitchMessage = "DRAW SHOOTER!";
 		}else{
-			Log.e(TAG, "draw failed - hit wall");
-			this.hallManager.renderer.pitchMessage = "SHOOTER HIT WALL";
+			String message = "draw failed - hit wall! x:"+position.getX() +" y:"+position.getY() +" z:"+position.getZ();
+			Log.e(TAG, message);
+			this.hallManager.renderer.pitchMessage = message;
+			System.exit(0);
 		}
 
 	}
@@ -68,15 +87,20 @@ public class Shooter implements Drawable {
 	private boolean hitWall() {
 		Log.e(TAG, "hitWall() movementRate.getX():"
 				+movementRate.getX()+" collisionPadding:"+collisionPadding
-				+" hallManager.getWallXOffset():"+hallManager.getWallXOffset());		
+				+" hallManager.getWallXOffset():"+hallManager.getWallXOffset());
+		
+		
+		
 		if(
 			((movementRate.getX() < 0.0) 
-				&& (position.getX() + collisionPadding) <= -hallManager.getWallXOffset())
+				&& (position.getX() - collisionPadding - planeHalfWidth) <= (-hallManager.getWallXOffset()))
 			||
 			((movementRate.getX() > 0.0) 
-					&& (position.getX() - collisionPadding) >= hallManager.getWallXOffset())
+					&& (position.getX() + collisionPadding + planeHalfWidth) >= hallManager.getWallXOffset())
 				){
-			Log.e(TAG, "collision detected!");
+			String message = "collision detected! x:"+position.getX() +" y:"+position.getY() +" z:"+position.getZ() +" left wall:"+(-hallManager.getWallXOffset() +" right wall:"+hallManager.getWallXOffset() );
+			Log.e(TAG, message);
+			hallManager.renderer.pitchMessage = message;
 			isFinished = true;
 			return isFinished;			
 		}else {

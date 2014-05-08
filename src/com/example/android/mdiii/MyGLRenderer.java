@@ -176,7 +176,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	
     	yaw = 0f;
     //		 		cameraSpeed = 0.01f;//1.25f;
-    	cameraSpeed = 0.001f;//1.25f;
+    	cameraSpeed = 0.0005f;//1.25f;
     	yawKludge = 0.01f;
     	pitchKludge = .1f;	
     	collisionDetected = false;
@@ -296,8 +296,9 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     
     	glText.begin( 1.0f, 1.0f, 1.0f, 1.0f );         // Begin Text Rendering (Set Color WHITE)
     	  
-    //		 		glText.draw("Z:" +this.cameraZ +" pitch:"+pitch +" " +pitchMessage +"\nSpeed:"+cameraSpeed, 50, 50 );         
-    	glText.draw("PUT BACK HALL CONTENTS!  Also TURN ON COLLISION DETECTION, Turn ON GRAVITY", 50, 50 );         
+//    	glText.draw("Z:" +this.cameraZ +" pitch:"+pitch +" " +pitchMessage +"\nSpeed:"+cameraSpeed, 50, 50 );         
+    	glText.draw(pitchMessage, 50, 50 );         
+//    	glText.draw("PUT BACK HALL CONTENTS!  Also TURN ON COLLISION DETECTION, Turn ON GRAVITY", 50, 50 );         
     
     	glText.end();     // End Text Rendering
 		 		
@@ -427,10 +428,14 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	
     	for(Contents contents : this.hallManager.getContents()){
     		for(Coord coord : contents.getMapCoordToDrawable().keySet()){
-    			if( planeZ >( coord.getZ() - drawableThreshold) 
-    					&& planeZ < ( coord.getZ() + drawableThreshold ) ){
+    			if( (planeZ >( coord.getZ() - drawableThreshold) 
+    					&& planeZ < ( coord.getZ() + drawableThreshold ))
+    				&&				
+//TODO add enum or type to Ground so we know if its a vent or a Shooter or whatever or simply subclass ground    			
+    				(planeY > coord.getY())
+    					){
     				Log.i(TAG, "updateVents() - intercepted vent:"+coord.getZ() +" planeZ:"+planeZ);
-    				pitchMessage = " VENTS!!!!!!!!!!!!!!!!!!!!!!!!!";
+//    				pitchMessage = " VENTS!!!!!!!!!!!!!!!!!!!!!!!!!";
     				planeY = planeY * 1.13f;
     			}else{
     				Log.i(TAG, "updateVents() - NO vent:"+coord.getZ() +" planeZ:"+planeZ);
@@ -581,14 +586,14 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	if( pitch >  (idealPitch + pitchTolerance) ){
     		Log.v(TAG, "updateCameraSpeed() Slow Down  - oldCameraSpeed:"+cameraSpeed +" newCameraSpeed:" +(cameraSpeed - accelerateRate));
     		cameraSpeed -= accelerateRate;
-    		pitchMessage = "Slowing Down";
+//    		pitchMessage = "Slowing Down";
     	}else if(pitch < (idealPitch - pitchTolerance)){
     		Log.v(TAG, "updateCameraSpeed() Speed Up -  oldCameraSpeed:"+cameraSpeed +" newCameraSpeed:" +(cameraSpeed + accelerateRate));
     		cameraSpeed += accelerateRate;
-    		pitchMessage = "Speeding Up";
+//    		pitchMessage = "Speeding Up";
     	}else{
     		Log.v(TAG, "updateCameraSpeed() no change: pitch:"+pitch +" idealPitch:" +idealPitch +" pitchTolerance: "+pitchTolerance);
-    		pitchMessage = "No Speed Change";
+//    		pitchMessage = "No Speed Change";
     	}
     }
     
