@@ -109,19 +109,21 @@ public class HallManager {
 		//	vent
 		Drawable obj = new Ground();
 		
-		Drawable obj1 = new Shooter(this, coord1, new Coord(0.0023f, 0, 0),this.mMVPMatrix);
+		Drawable obj1 = new Shooter(this, coord1, new Coord(0.0050f, 0, 0),this.mMVPMatrix);
 		Drawable obj2 = new Fan(coord2, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj3 = new Fan(coord3, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj4 = new Fan(coord4, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj5 = new Fan(coord5, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
+//FIXME put back contents		
+		contentsMap.put(coord1, obj1);
 		
 		contentsMap.put(coord, obj);
-		contentsMap.put(coord1, obj1);
 		contentsMap.put(coord2, obj2);
 	    contentsMap.put(coord3, obj3);
+/*	    
 	    contentsMap.put(coord4, obj4);
 	    contentsMap.put(coord5, obj5);
-
+*/
 		contentsList = new ArrayList<Contents>();
 		contentsList.add(new Contents(this, contentsMap, wallMatrix, mMVPMatrix, finalWallMatrix));
 }

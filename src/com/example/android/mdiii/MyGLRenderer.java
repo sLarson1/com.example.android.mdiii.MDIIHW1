@@ -45,6 +45,8 @@ wrap all logging statements like this            if(Log.isLoggable(TAG, Log.VERB
 
  import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
+import java.util.Map.Entry;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -127,6 +129,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     private final float[] rotationMatrix = new float[16];
     private final float[] objectFinalMatrix = new float[16];
     private final float[] previousMatrix = new float[16];
+    private float[] planeMatrix = new float[16];
     
     Canvas canvas;
     Drawable background;
@@ -176,7 +179,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	
     	yaw = 0f;
     //		 		cameraSpeed = 0.01f;//1.25f;
-    	cameraSpeed = 0.0005f;//1.25f;
+    	cameraSpeed = 0.005f;//1.25f;
     	yawKludge = 0.01f;
     	pitchKludge = .1f;	
     	collisionDetected = false;
@@ -269,13 +272,15 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     
     	hallManager.draw(cameraZ);
     
-    	drawPlane(objectMatrix, objectFinalMatrix);
+//    	drawPlane(objectMatrix, objectFinalMatrix);
+    	drawPlane(objectMatrix, rotationMatrix, objectFinalMatrix);
     	drawTexture();
     	
     	updateDirection();
     	updateCameraPosition();
     	updateLookAt();
     	updatePlanePosition();
+//FIXME put back gravity    	
     	updateGravity();
     	recordMeasurements();
     
@@ -304,6 +309,35 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
 		 		
 
 //    	image.draw(objectFinalMatrix);
+//    	if(hallManager.contentsMap.)
+		for(Entry<Coord, com.example.android.mdiii.Drawable> entry : hallManager.contentsMap.entrySet()){
+			/*
+			if the drawable is of type ground use theh draw method in this class
+			if the drawable is of type Fan then use the draw method in fan
+			*/
+			com.example.android.mdiii.Drawable drawable = (com.example.android.mdiii.Drawable) entry.getValue();
+			if(drawable instanceof Shooter){
+				Shooter shooter = (Shooter) drawable;
+				if(shooter.isFinished() && shooter.hitPlane()) {
+					    	
+					try {
+						Thread.sleep(250);
+						image.draw(planeMatrix);
+						Thread.sleep(250);
+						image.draw(planeMatrix);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					
+					
+					resetCamera();
+				}
+
+			}
+			
+		}    	
+
     
     	GLES20.glDisable( GLES20.GL_BLEND );  
     	GLES20.glEnable( GLES20.GL_DEPTH_TEST );		
@@ -332,14 +366,16 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     
     private void updateYaw() {
        Log.v(TAG, "updateYaw: mDx" + mDx + "Original Angle [Degrees]:" +Math.toDegrees(mDx) +" New Angle [Degrees]:" +Math.toDegrees(mDx * yawKludge));
-    	yaw = (mDx * yawKludge);
+//    	yaw = (mDx * yawKludge);
+    	yaw += (mDx * yawKludge);    	
     }
     
     
     
     private void updatePitch() {	
        Log.v(TAG, "updatePitch: mDy" + mDy + "Original Angle [Degrees]:" +pitch +" New Angle [Degrees]:" +(mDy * pitchKludge));
-       pitch = (mDy * pitchKludge); 	   
+//       pitch = (mDy * pitchKludge); 	   
+       pitch += (mDy * pitchKludge); 	   
     
     }
     
@@ -352,7 +388,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	rotateX();
     	rotateY();
     	
-    	Log.v(TAG, "updateDirection() - complete - yaw:"+yaw +" pitch:" +pitch +" directionX:" + directionX + " directionY:"+ directionY +" directionZ:"+directionZ);
+    	Log.e(TAG, "updateDirection() - complete - yaw:"+yaw +" pitch:" +pitch +" directionX:" + directionX + " directionY:"+ directionY +" directionZ:"+directionZ);
     }
     
     private void rotateX(){
@@ -406,7 +442,8 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     private void initialPlanePosition(){
     	planeX = lookX;
     	planeY = lookY * .75f;
-    	planeZ = lookZ + .75f;		
+//    	planeZ = lookZ + .75f;		
+    	planeZ = lookZ + 0f;		
     }
     
     private void updatePlanePosition(){
@@ -420,7 +457,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	if(detectCollision()){
     		resetCamera();
     	}
-    	Log.v(TAG, "updatePlanePosition() planeX:"+planeX+" planeY:"+planeY +" planeZ:"+planeZ);
+    	Log.e(TAG, "updatePlanePosition() planeX:"+planeX+" planeY:"+planeY +" planeZ:"+planeZ);
     }
     
     //TODO make this more oo
@@ -519,6 +556,8 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	setmDx(0);
     	setmDy(0);
     	collisionDetected = false;
+    	
+    	hallManager = new HallManager(this, 3, 10.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 50.0f, this.objectMatrix, this.objectFinalMatrix, this.mMVPMatrix, this.wallXOffset, this.wallYOffset);    	
     }
     
     	
@@ -573,8 +612,56 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	  Matrix.multiplyMM(finalWallMatrix, 0, mMVPMatrix, 0, intermediateMatrix, 0);
     
     	// Draw Ground
-    	  plane.draw(finalWallMatrix);         
+    	  plane.draw(finalWallMatrix);      
     }
+    
+	private void drawPlane(float[] wallMatrix, float[] rotationMatrix, float[] finalWallMatrix){
+
+        float[] deltaMatrix = new float[16];
+		final float[] intermediateMatrix = new float[16];
+		planeMatrix = new float[16];
+
+		 // Set the camera position (View matrix)
+        Matrix.setIdentityM(wallMatrix, 0);
+        Matrix.setIdentityM(rotationMatrix, 0); 
+        Matrix.setIdentityM(planeMatrix, 0);
+        Matrix.setIdentityM(intermediateMatrix, 0);
+        Matrix.setIdentityM(deltaMatrix, 0);
+/*         
+         //	pitch
+         Matrix.rotateM(wallMatrix, 0, pitch * -85.0f, 1, 0, 0);         
+         //	roll
+         Matrix.rotateM(wallMatrix, 0, (yaw * 50.0f), 0, 0, 1);
+         //	yaw
+         Matrix.rotateM(wallMatrix, 0, (yaw * -80.0f), 0, 1, 0);
+*/         
+         //   Move the Object of interest on the Screen
+         Matrix.translateM(wallMatrix, 0,  planeX, planeY, planeZ);         
+
+         //	roll
+         Matrix.rotateM(deltaMatrix, 0, (yaw * 70.0f), 0, 0, 1);
+         
+         //	pitch
+         Matrix.rotateM(deltaMatrix, 0, pitch * -85.0f, rotationMatrix[0], rotationMatrix[1], rotationMatrix[2]);         
+
+         //	yaw
+         Matrix.rotateM(deltaMatrix, 0, (yaw * -80.0f), rotationMatrix[4], rotationMatrix[5], rotationMatrix[6]);
+         
+//         Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix, 0, wallMatrix, 0);
+//         Matrix.multiplyMM(intermediateMatrix, 0, wallMatrix,  0, rotationMatrix, 0);
+
+
+
+	// Combine the Object of interest matrix with the projection and camera view
+//         Matrix.multiplyMM(finalWallMatrix, 0, mMVPMatrix, 0, intermediateMatrix, 0);
+         Matrix.multiplyMM(rotationMatrix, 0, deltaMatrix,  0, rotationMatrix, 0);
+         Matrix.multiplyMM(intermediateMatrix, 0, rotationMatrix,  0, wallMatrix, 0);         
+         Matrix.multiplyMM(planeMatrix, 0, mMVPMatrix, 0, intermediateMatrix, 0);
+ 
+       // Draw Ground
+         plane.draw(planeMatrix);         
+//       ground.draw(finalWallMatrix);		
+	}    
     
     protected void updateGravity(){
     	updateCameraSpeed();
@@ -764,11 +851,11 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	// If the compilation failed, delete the shader.
     	if (compileStatus[0] == 0) 
     	{
-    		Log.e(TAG, "Error compiling shader: " + GLES20.glGetShaderInfoLog(shader));
+    		Log.v(TAG, "Error compiling shader: " + GLES20.glGetShaderInfoLog(shader));
     		GLES20.glDeleteShader(shader);
     		shader = 0;
     	}else{
-    		Log.i(TAG, "Successful compilation of shader:"+shader +" code:"+shaderCode);
+    		Log.v(TAG, "Successful compilation of shader:"+shader +" code:"+shaderCode);
     	}
     
     	return shader;
@@ -821,7 +908,27 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	return mDy;
     }
     
-    @Override
+    public float getPlaneY() {
+		return planeY;
+	}
+
+	public float getPlaneX() {
+		return planeX;
+	}
+
+	public float getPlaneZ() {
+		return planeZ;
+	}
+
+	public float getPlaneWidth() {
+		return planeWidth;
+	}
+
+	public float getPlaneHeight() {
+		return planeHeight;
+	}
+
+	@Override
     public void onAccuracyChanged(Sensor arg0, int arg1) {
     	
     }

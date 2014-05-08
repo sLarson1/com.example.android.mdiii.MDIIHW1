@@ -33,7 +33,11 @@ public class Shooter implements Drawable {
 	private float collisionPadding;
 	private float shooterHeight;
 	private float shooterWidth;
+	//TODO - THIS SHOULD REALLY BE A RECTANGLE CALCULATION TOO.
+	/**How close are the Z centers of both objects */
+	private float zTolerance;
 	private boolean isFinished;
+	private float xTolerance;
 	
 	
 	
@@ -48,8 +52,10 @@ public class Shooter implements Drawable {
 		collisionPadding = 0.0f;
 		drawable = new Ground();
 		
-		shooterWidth = 0.5f;
+		shooterWidth = 0.25f;
 		shooterHeight = 0.25f;
+		zTolerance = 0.50f;
+		xTolerance = 0.50f;
 	}
 
 
@@ -58,9 +64,9 @@ public class Shooter implements Drawable {
 	 */
 	@Override
 	public void draw(Coord coord, float[] mvpMatrix) {
-		Log.e(TAG , "drawing entity:"+drawable);		
+		Log.i(TAG , "drawing entity:"+drawable);		
 		
-		if(!hitWall()) {	        
+		if(!isFinished()) {	        
 			float[] movementMatrix= new float[16];
 			float[] shooterMatrix = new float[16];
 
@@ -74,36 +80,79 @@ public class Shooter implements Drawable {
 	        
 	        drawable.draw(shooterMatrix);		
 			move();
-//			this.hallManager.renderer.pitchMessage = "DRAW SHOOTER!";
-		}else{
+		}
+
+		//TODO Just for debugging		
+		if(hitPlane()){
 			String message = "draw failed - hit wall! x:"+position.getX() +" y:"+position.getY() +" z:"+position.getZ();
-			Log.e(TAG, message);
+			Log.i(TAG, message);
 			this.hallManager.renderer.pitchMessage = message;
-			System.exit(0);
+//			System.exit(0);
 		}
 
 	}
-
+	
+	//TODO move collision detection into its own class:CollisionDetection - it handles all collision detection
+	//TODO In collision class have 3 options: bounding box and spherical(Use plane equation) and capsule
 	private boolean hitWall() {
-		Log.e(TAG, "hitWall() movementRate.getX():"
+		Log.i(TAG, "hitWall() movementRate.getX():"
 				+movementRate.getX()+" collisionPadding:"+collisionPadding
 				+" hallManager.getWallXOffset():"+hallManager.getWallXOffset());
 		
-		
+		if(
+			(	
+    			((movementRate.getX() < 0.0) 
+    				&& (position.getX() - collisionPadding - shooterWidth) <= (-hallManager.getWallXOffset()))
+    			||
+    			((movementRate.getX() > 0.0) 
+    					&& (position.getX() + collisionPadding + shooterWidth) >= hallManager.getWallXOffset())
+    		)
+
+			
+		){
+			String message = "collision detected! x:"+position.getX() +" y:"+position.getY() +" z:"+position.getZ() +" left wall:"+(-hallManager.getWallXOffset() +" right wall:"+hallManager.getWallXOffset() );
+			Log.i(TAG, message);
+			hallManager.renderer.pitchMessage = message;
+			return true;			
+		}else {
+			return false;
+		}
+	}
+
+	public boolean hitPlane(){
+
+		float planeX = hallManager.renderer.getPlaneX();
+		float planeY = hallManager.renderer.getPlaneY();
+		float planeHeight = hallManager.renderer.getPlaneHeight();
+		float planeWidth = hallManager.renderer.getPlaneWidth();
+		float planeZ = hallManager.renderer.getPlaneZ();
+		boolean planeHit = false;
 		
 		if(
-			((movementRate.getX() < 0.0) 
-				&& (position.getX() - collisionPadding - planeHalfWidth) <= (-hallManager.getWallXOffset()))
-			||
-			((movementRate.getX() > 0.0) 
-					&& (position.getX() + collisionPadding + planeHalfWidth) >= hallManager.getWallXOffset())
-				){
-			String message = "collision detected! x:"+position.getX() +" y:"+position.getY() +" z:"+position.getZ() +" left wall:"+(-hallManager.getWallXOffset() +" right wall:"+hallManager.getWallXOffset() );
-			Log.e(TAG, message);
+			(
+    			//	X collision
+    			Math.abs(position.getX() - planeX) < xTolerance					
+			)	
+			&&
+    		( 
+    			//	Y collision	
+    			((position.getY() + shooterHeight) > (planeY - planeHeight) )&& ( (position.getY() + shooterHeight) < (planeY + planeHeight) )
+    			||
+    			((position.getY() - shooterHeight) > ( planeY - planeHeight) ) && ( (position.getY() - shooterHeight) < (planeY + planeHeight) )
+    		)
+    		&&
+    		(
+    			//	Z collision
+    			Math.abs(position.getZ() - planeZ) < zTolerance	
+    		)
+		){
+			String message = "Plane collision: X:"+position.getX() +" planeX:" +planeX 
+							+" Y:" +position.getY() +" planeY:"+planeY 
+							+" Z:" +position.getZ() +" planeY:"+planeZ;
+			Log.i(TAG, message);
 			hallManager.renderer.pitchMessage = message;
-			isFinished = true;
-			return isFinished;			
-		}else {
+			return true;
+		}else{
 			return false;
 		}
 	}
@@ -129,6 +178,10 @@ public class Shooter implements Drawable {
 	@Override
 	public boolean isFinished() {
 		// TODO Auto-generated method stub
+		if(!isFinished){
+			isFinished = hitWall() || hitPlane();
+		}
+		
 		return isFinished;
 	}
 
