@@ -179,7 +179,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	
     	yaw = 0f;
     //		 		cameraSpeed = 0.01f;//1.25f;
-    	cameraSpeed = 0.0005f;//1.25f;
+    	cameraSpeed = 0.00015f;//1.25f;
     	yawKludge = 0.01f;
     	pitchKludge = .1f;	
     	collisionDetected = false;

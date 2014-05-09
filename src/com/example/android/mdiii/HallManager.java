@@ -115,9 +115,9 @@ public class HallManager {
 		Drawable obj4 = new Fan(coord4, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj5 = new Fan(coord5, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 //FIXME put back contents		
-		contentsMap.put(coord1, obj1);
+//		contentsMap.put(coord1, obj1);
 		
-		contentsMap.put(coord, obj);
+//		contentsMap.put(coord, obj);
 		contentsMap.put(coord2, obj2);
 	    contentsMap.put(coord3, obj3);
 /*	    

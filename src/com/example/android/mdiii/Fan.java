@@ -75,13 +75,16 @@ public class Fan implements Drawable {
 		armCoord = new Coord(baseCoordinate.getX() + armCoordOffset, baseCoordinate.getY() +( 2 *armCoordOffset), baseCoordinate.getZ() + armCoordOffset);
 		bladeCoord = new Coord(armCoord.getX() + bladeCoordOffset, armCoord.getY() +( 1 *bladeCoordOffset), armCoord.getZ() + bladeCoordOffset);
 		//armCoord.setX(armCoord.getX() + baseCoordinate.getX());
+		
+	    Matrix.setIdentityM(armMatrix, 0);
+	    Matrix.setIdentityM(baseMatrix, 0);
 	}
 
 	public void drawBase(){
 		printMatrix(baseMatrix);
 
         Matrix.setIdentityM(objectMatrix, 0);
-        Matrix.setIdentityM(baseMatrix, 0);
+        
         
 		//	make it vertical
         Matrix.rotateM(objectMatrix, 0, 90.0f, 0, 0, 1);
@@ -98,11 +101,68 @@ public class Fan implements Drawable {
         drawArm(baseMatrix);
 	}
 
+   @SuppressLint("NewApi")
+   public void drawArm(float[] previousRotationMatrix){
+
+      printMatrix(finalMatrix);
+      float[] rotationMatrix = new float[16];
+      float[] offsetMatrix = new float[16];
+      float[] translationMatrix = new float[16];
+      float[] tempMatrix = new float[16];
+      float[] temp2Matrix = new float[16];
+      
+
+      Matrix.setIdentityM(rotationMatrix, 0);
+      Matrix.setIdentityM(offsetMatrix, 0);
+      Matrix.setIdentityM(translationMatrix, 0);
+      Matrix.setIdentityM(tempMatrix, 0);
+      Matrix.setIdentityM(temp2Matrix, 0);
+      
+      // move a little to the right so we rotate by its edge
+      Matrix.translateM(offsetMatrix, 0, 0.5f, 0, 0 );
+//      Matrix.translateM(rotationMatrix, 0, 0.5f, 0, 0 );
+      
+      //  move Arm to spot
+      Matrix.translateM(translationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );    
+      
+      // rotate about Z
+      Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);        
+ 
+      Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + armCoord.getX()+ ", baseCoordinate.getY():" + armCoord.getY() + ", baseCoordinate.getZ():" + armCoord.getZ() + " )");              
+/**/
+      //rotation origin as at arm - kind of works       
+      Matrix.multiplyMM(tempMatrix, 0, offsetMatrix, 0,rotationMatrix, 0);
+      Matrix.multiplyMM(temp2Matrix, 0, translationMatrix, 0,tempMatrix, 0);
+      
+      Matrix.multiplyMM(armMatrix, 0, mMVPMatrix, 0,temp2Matrix, 0);      
+
+      
+/*      
+      Matrix.multiplyMM(tempMatrix, 0, offsetMatrix, 0,rotationMatrix, 0);      
+      
+      Matrix.multiplyMM(armMatrix, 0, mMVPMatrix, 0,tempMatrix, 0);
+*/
+      
+/*      
+      Matrix.multiplyMM(tempMatrix, 0, rotationMatrix, 0,offsetMatrix, 0);      
+      
+      Matrix.multiplyMM(armMatrix, 0, mMVPMatrix, 0,tempMatrix, 0);
+*/
+      Matrix.multiplyMM(armMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
+      
+      //  draw arm
+      arm.draw(armMatrix);
+      
+      changeArmAngle();
+   }
+	
+	
 	@SuppressLint("NewApi")
-	public void drawArm(float[] previousRotationMatrix){
+	public void drawArmOld(float[] previousRotationMatrix){
 
 		printMatrix(finalMatrix);
 		float[] rotationMatrix = new float[16];
+		float[] translationMatrix = new float[16];
 		float[] offsetTranslationMatrix = new float[16];
 		float[] destinationtranslationMatrix = new float[16];
 		float[] temp1Matrix = new float[16];
@@ -114,15 +174,18 @@ public class Fan implements Drawable {
 
 		//put at origin
 		Matrix.setIdentityM(rotationMatrix, 0);
+		Matrix.setIdentityM(translationMatrix, 0);
+		
 		Matrix.setIdentityM(offsetTranslationMatrix, 0);
 		Matrix.setIdentityM(destinationtranslationMatrix, 0);
-		Matrix.setIdentityM(armMatrix, 0);
+
 		Matrix.setIdentityM(temp1Matrix, 0);
 		Matrix.setIdentityM(temp2Matrix, 0);
 
 		//	move a little to the right so we rotate by its edge
-//		Matrix.translateM(rotationMatrix, 0, 0.5f, 0, 0 );
-		Matrix.translateM(offsetTranslationMatrix, 0, 0.5f, 0, 0 );
+		//Matrix.translateM(translationMatrix, 0, 0.5f, 0, 0 );
+      //  move Arm to spot
+      Matrix.translateM(translationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );		
       
 		//	rotate about Z
         Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);        
@@ -131,8 +194,7 @@ public class Fan implements Drawable {
 //        Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 1, 0);
   
         //	move Arm to spot
-//        Matrix.translateM(rotationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
-        Matrix.translateM(destinationtranslationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );        
+//        Matrix.translateM(destinationtranslationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );        
       
         Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + armCoord.getX()+ ", baseCoordinate.getY():" + armCoord.getY() + ", baseCoordinate.getZ():" + armCoord.getZ() + " )");              
 
@@ -144,11 +206,6 @@ public class Fan implements Drawable {
         //	draw arm
         arm.draw(armMatrix);
 
-/*
-        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
-        
-		blades.draw(finalMatrix);
-*/
 		changeArmAngle();
 	}
 
