@@ -13,12 +13,6 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
-
-
-
-import java.util.Arrays;
-
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -79,7 +73,8 @@ public class Image implements Drawable {
 	static final int COORDS_PER_VERTEX = 3;
 	static final int COORDS_PER_TEXTURE = 2;
 
-	private final int vertexStride = (COORDS_PER_VERTEX +COORDS_PER_TEXTURE) * 4; // 4 bytes per vertex
+	private final int vertexStride =COORDS_PER_VERTEX * 4; // 4 bytes per vertex
+	private final int textureStride = COORDS_PER_TEXTURE * 4; // 4 bytes per vertex
 	float color[] = { 0.2f, 0.709803922f, 0.898039216f, 1.0f };
 	
 	//	Use Triangle Strip - so only need 4 vertices
@@ -103,10 +98,10 @@ public class Image implements Drawable {
 	
 	static float vColor[] =
 	{
-		0.4f, 0.4f, 0.8f,
-		0.4f, 0.4f, 0.8f,
-		0.4f, 0.4f, 0.8f,
-		0.4f, 0.4f, 0.8f,
+		0.0f, 0.0f, 0.9f,
+		0.0f, 1.0f, 0.1f,
+		1.0f, 1.0f, 0.3f,
+		1.0f, 0.0f, 0.8f,
 	};
 
 	
@@ -119,7 +114,7 @@ public class Image implements Drawable {
 	      
 	      
 	public Image( ) {
-		
+		mTextureDataHandle = GraphicsUtils.loadTexture(R.drawable.background_small);
 		isFinished = false;
 		// Buffers to be passed to gl*Pointer() functions must be
 		// direct, i.e., they must be placed on the native heap
@@ -185,6 +180,8 @@ public class Image implements Drawable {
 			GLES20.glDeleteProgram(mProgram);
 //			throw new RuntimeException("error with shader!");
 		}		
+		
+
 	}
 
 
@@ -227,7 +224,7 @@ public class Image implements Drawable {
 		glEnableVertexAttribArray(mTextureCoordinateHandle);
 		glVertexAttribPointer(mTextureCoordinateHandle,COORDS_PER_TEXTURE ,
 								  GL_FLOAT, false,
-								  vertexStride, mTextureBuffer); 
+								  textureStride, mTextureBuffer); 
     
      
 		// send matrix to vertex shader
@@ -239,13 +236,15 @@ public class Image implements Drawable {
 
 		mTextureUniformHandle = GLES20.glGetUniformLocation(mProgram, "u_Sampler_Texture");
 
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle);
 		// Tell the texture uniform sampler to use this texture in the shader by binding to texture unit 0.
 		GLES20.glUniform1i(mTextureUniformHandle, 0);     
 
 
 		// Draw the ground
-		GLES20.glDrawElements(GLES20.GL_TRIANGLES, groundIndices.length,
-							GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, groundIndices.length,GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+//		GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, 1);
 		//Use triangle strip instead of regular triangles
 //		GLES20.glDrawElements(GLES20.GL_TRIANGLE_STRIP, groundIndices.length,
 //			 GLES20.GL_UNSIGNED_SHORT, drawListBuffer); 
@@ -257,7 +256,7 @@ public class Image implements Drawable {
     
     }
 
-	@SuppressLint("NewApi")
+//	@SuppressLint("NewApi")
    public void loadTexture(Context context){
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inMutable = true;

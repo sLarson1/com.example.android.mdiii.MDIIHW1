@@ -1,0 +1,26 @@
+	        precision mediump float;
+			
+			uniform sampler2D u_Sampler_Texture;
+			
+			varying vec4 v_Color;
+			
+			varying vec2 v_TexCoord;
+				
+			
+	        void main() {
+	          //	gl_FragColor = vertex_color;	// color without having a texture
+	           
+//	          gl_FragColor = (v_Color * texture2D(u_Sampler_Texture, v_TexCoord));
+/*       
+	          gl_FragColor.x = v_TexCoord.x;
+	          gl_FragColor.y = v_TexCoord.y;
+	          gl_FragColor.z = v_TexCoord.x;
+	          
+	          gl_FragColor.w = 1.0;
+*/	          
+			  gl_FragColor.x = v_TexCoord.x * 0.05f; 
+			  gl_FragColor.y = 0f;
+			  gl_FragColor.z = 0f;
+			  gl_FragColor.w = 0f;
+	          gl_FragColor += texture2D(u_Sampler_Texture, v_Color);
+	        }

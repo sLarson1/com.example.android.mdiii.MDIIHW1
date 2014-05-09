@@ -1,4 +1,3 @@
-
 //why does the second arm work and not the first?
 /**
  * started blade work
@@ -19,12 +18,11 @@ import android.util.Log;
  *
  */
 public class Fan implements Drawable {
-	
-	private boolean isFinished;
+
 	private final float[] baseMatrix = new float[16];
-	private final float[] armlMatrix = new float[16]; 
+	private final float[] armMatrix = new float[16]; 
 	private final float[] bladeMatrix = new float[16];
-	
+
 	private final float[] objectMatrix;
 	private final float[] mMVPMatrix;
 	private final float[] finalMatrix;
@@ -50,23 +48,22 @@ public class Fan implements Drawable {
 	private float bladeRotationRate;
 	private float bladeAngle;
 
-	
+
 
 	public Fan(Coord rootCoordinate, float[] objectMatrix, float[] mMVPMatrix, float[] finalMatrix) {
-		isFinished = false;
 		this.objectMatrix = objectMatrix;
 		this.mMVPMatrix = mMVPMatrix;
 		this.finalMatrix = finalMatrix;
 		this.baseCoordinate = rootCoordinate;
 		base = new Ground();
 		arm = new Ground();
-		blades = new Blades();
-//		blades = new Ground();
+//		blades = new Blades();
+		blades = new Ground();
 		armInitialAngle = 0f;
 		armAngle = armInitialAngle;
 		bladeInitialAngle = armInitialAngle;
 		bladeAngle = bladeInitialAngle;
-		armRotationRate = .025f;
+		armRotationRate = .10f;
 		bladeRotationRate = .025f;
 		armMaxAngle = 400.0f * armRotationRate;
 		armMinAngle = -armMaxAngle;
@@ -74,15 +71,17 @@ public class Fan implements Drawable {
 		firstRun = true;
 		xOriginOffset= 0.25f;
 		armCoordOffset = .5f;
-		armCoord = new Coord(baseCoordinate.getX() + armCoordOffset, baseCoordinate.getY() +( 1 *armCoordOffset), baseCoordinate.getZ() + armCoordOffset);
+//		armCoord = new Coord(baseCoordinate.getX() + armCoordOffset, baseCoordinate.getY() +( 1 *armCoordOffset), baseCoordinate.getZ() + armCoordOffset);
+		armCoord = new Coord(baseCoordinate.getX() + armCoordOffset, baseCoordinate.getY() +( 2 *armCoordOffset), baseCoordinate.getZ() + armCoordOffset);
 		bladeCoord = new Coord(armCoord.getX() + bladeCoordOffset, armCoord.getY() +( 1 *bladeCoordOffset), armCoord.getZ() + bladeCoordOffset);
 		//armCoord.setX(armCoord.getX() + baseCoordinate.getX());
 	}
 
 	public void drawBase(){
-		printMatrix(finalMatrix);
-		
+		printMatrix(baseMatrix);
+
         Matrix.setIdentityM(objectMatrix, 0);
+        Matrix.setIdentityM(baseMatrix, 0);
         
 		//	make it vertical
         Matrix.rotateM(objectMatrix, 0, 90.0f, 0, 0, 1);
@@ -90,89 +89,90 @@ public class Fan implements Drawable {
         Matrix.translateM(objectMatrix, 0, baseCoordinate.getX(), baseCoordinate.getY(), baseCoordinate.getZ() );
         
         Log.v(TAG, "drawBase(objectMatrix, 0,  coord.getX():" + baseCoordinate.getX()+ ", baseCoordinate.getY():" + baseCoordinate.getY() + ", baseCoordinate.getZ():" + baseCoordinate.getZ() + " )");              
-        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,objectMatrix, 0);
+        Matrix.multiplyMM(baseMatrix, 0, mMVPMatrix, 0,objectMatrix, 0);
         
         Log.v(TAG , "drawing entity:"+base);
-        base.draw(finalMatrix);		
+        base.draw(baseMatrix);		
         
-        printMatrix(finalMatrix);
-        drawArm(finalMatrix);
+        printMatrix(baseMatrix);
+        drawArm(baseMatrix);
 	}
-	
+
 	@SuppressLint("NewApi")
 	public void drawArm(float[] previousRotationMatrix){
-//Don't reuse final matrix?
+
 		printMatrix(finalMatrix);
 		float[] rotationMatrix = new float[16];
-		float[] newFinalMatrix = new float[16];
-		
-		
+		float[] offsetTranslationMatrix = new float[16];
+		float[] destinationtranslationMatrix = new float[16];
+		float[] temp1Matrix = new float[16];
+		float[] temp2Matrix = new float[16];
+
+
 		//rotate
 		//move to spot
+
 		//put at origin
-		
 		Matrix.setIdentityM(rotationMatrix, 0);
-		Matrix.setIdentityM(bladeMatrix, 0);
-	
+		Matrix.setIdentityM(offsetTranslationMatrix, 0);
+		Matrix.setIdentityM(destinationtranslationMatrix, 0);
+		Matrix.setIdentityM(armMatrix, 0);
+		Matrix.setIdentityM(temp1Matrix, 0);
+		Matrix.setIdentityM(temp2Matrix, 0);
+
 		//	move a little to the right so we rotate by its edge
-		Matrix.translateM(rotationMatrix, 0, 0.5f, 0, 0 );
+//		Matrix.translateM(rotationMatrix, 0, 0.5f, 0, 0 );
+		Matrix.translateM(offsetTranslationMatrix, 0, 0.5f, 0, 0 );
       
 		//	rotate about Z
-        Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
-        
-//        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 0, 0, 1);
-        
-        /*       Matrix.rotateM(bladeMatrix, 0, bladeAngle, 1, 0, 0);
-*/	      
-        
-        /*      
+        Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);        
+
         //	rotate about Y
-        Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 1, 0);
+//        Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 1, 0);
   
         //	move Arm to spot
-        Matrix.translateM(rotationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
+//        Matrix.translateM(rotationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
+        Matrix.translateM(destinationtranslationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );        
       
         Log.v(TAG, "drawArm(objectMatrix, 0,  coord.getX():" + armCoord.getX()+ ", baseCoordinate.getY():" + armCoord.getY() + ", baseCoordinate.getZ():" + armCoord.getZ() + " )");              
 
-        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               
+        
+        Matrix.multiplyMM(temp1Matrix, 0, rotationMatrix, 0,offsetTranslationMatrix, 0);
+        Matrix.multiplyMM(temp2Matrix, 0, destinationtranslationMatrix, 0,temp1Matrix, 0);
+        Matrix.multiplyMM(armMatrix, 0, mMVPMatrix, 0,temp2Matrix, 0);
+        
         //	draw arm
-        arm.draw(finalMatrix);
-        changeArmAngle();
+        arm.draw(armMatrix);
+
+/*
+        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
+        
+		blades.draw(finalMatrix);
 */
-  
-        
-        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
-        
-        //	draw arm
-        arm.draw(finalMatrix);
-        changeArmAngle();        
-        
-/*        
-        Matrix.multiplyMM(newFinalMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);        
-        arm.draw(newFinalMatrix);
-        changeArmAngle();
-*/        
-        
-//        Matrix.multiplyMM(newFinalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
-        
-//		blades.draw(newFinalMatrix);			
-		
-		changeBladeAngle();
-	
+		changeArmAngle();
 	}
-	
+
 
 	private void changeBladeAngle() {
-		bladeAngle += 0.1f *  bladeRotationRate;
+		bladeAngle += 10 *  bladeRotationRate;
 	}
 
 	public void drawBlades(){
+		Matrix.setIdentityM(bladeMatrix, 0);
 		
+		//	rotate about Z
+        Matrix.rotateM(bladeMatrix, 0, bladeAngle, 0, 0, 1);
+                
+        Matrix.multiplyMM(finalMatrix, 0, mMVPMatrix, 0,bladeMatrix, 0);
+        
+		blades.draw(finalMatrix);
+
+		changeArmAngle();
+		changeBladeAngle();        
 	}
 
 	private void changeArmAngle(){
-		
+
 		if( armRotationDirection.equals("up") ) {
 			if(armAngle + armRotationRate > armMaxAngle ){
 				armRotationDirection = "down";
@@ -187,7 +187,7 @@ public class Fan implements Drawable {
 			}else{
 				armAngle -= armRotationRate;
 			}			
-			
+
 		}		
 	}
 
@@ -198,29 +198,22 @@ public class Fan implements Drawable {
 	public void draw(float[] mvpMatrix) {
 		drawBase();
 	}
-	
-	
-	
-	/* (non-Javadoc)
-	 * @see com.example.android.mdiii.Drawable#isFinished()
-	 */
-	@Override
-	public boolean isFinished() {
-		return isFinished;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.example.android.mdiii.Drawable#draw(com.example.android.mdiii.Coord, float[])
-	 */
-	@Override
-	public void draw(Coord coord, float[] mvpMatrix) {
-		// TODO Auto-generated method stub
-		
-	}
 
 	private void printMatrix(float[] matrix){
 		StringBuilder sb = new StringBuilder();
 		sb.append("[" +matrix[0] +"," +matrix[1] +"," +matrix[2] +"," +matrix[3] +",");
 		Log.d(TAG, sb.toString());
+	}
+
+	@Override
+	public boolean isFinished() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public void draw(Coord coord, float[] mvpMatrix) {
+		// TODO Auto-generated method stub
+		
 	}
 }

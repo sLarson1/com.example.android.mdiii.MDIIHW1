@@ -16,7 +16,7 @@ import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-public class GraphicsUtils {
+public class CopyOfGraphicsUtils {
 	
 	static Context context;
 	private static final String TAG = "GraphicsUtils";
@@ -113,13 +113,17 @@ public class GraphicsUtils {
 		int fragmentShader = loadShader(GLES20.GL_FRAGMENT_SHADER, pixelShaderCode);
 		if (fragmentShader == -1)  return -1;
 		
-		mProgram = GLES20.glCreateProgram();             // create empty OpenGL Program
+		// create empty OpenGL Program
+		mProgram = GLES20.glCreateProgram();             
 		checkGlError("glCreateProgram");
-		GLES20.glAttachShader(mProgram, vertexShader);   // add the vertex shader to program
+		// add the vertex shader to program
+		GLES20.glAttachShader(mProgram, vertexShader);   
 		checkGlError("glAttachShader");
-		GLES20.glAttachShader(mProgram, fragmentShader); // add the fragment shader to program
+		 // add the fragment shader to program
+		GLES20.glAttachShader(mProgram, fragmentShader);
 		checkGlError("glAttachShader");
-		GLES20.glLinkProgram(mProgram);                  // create OpenGL program executables
+		// create OpenGL program executables
+		GLES20.glLinkProgram(mProgram);                  
 		checkGlError("glLinkProgram");
 		
 	    int[] tbuffer = new int[1];
@@ -141,42 +145,5 @@ public class GraphicsUtils {
         }
     }
     
-
-public static int loadTexture(final int resourceId)
-{
-    final int[] textureHandle = new int[1];
- 
-    GLES20.glGenTextures(1, textureHandle, 0);
-   checkGlError("glGenTextures");
-    
-    if (textureHandle[0] != 0)
-    {
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inScaled = false;   // No pre-scaling
- 
-        // Read in the resource
-        final Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), resourceId, options);
-  
-        // Bind to the texture in OpenGL
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
-       checkGlError("glBindTexture");
-        // Set filtering
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-       checkGlError("glTexParameteri");
-        // Load the bitmap into the bound texture.
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0);
-       checkGlError("texImage2D");
-        // Recycle the bitmap, since its data has been loaded into OpenGL.
-        bitmap.recycle();
-    }
- 
-    if (textureHandle[0] == 0)
-    {
-        throw new RuntimeException("Error loading texture.");
-    }
- 
-    return textureHandle[0];
-} 
 
 }

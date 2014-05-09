@@ -81,7 +81,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     private static final String TAG = "MyGLRenderer";
     private Ground ground;
     //		 	private Plane plane;
-    private Ground plane;
+    private com.example.android.mdiii.Drawable plane;
     private GLSurfaceView view;
     private HallManager hallManager;
     
@@ -179,7 +179,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	
     	yaw = 0f;
     //		 		cameraSpeed = 0.01f;//1.25f;
-    	cameraSpeed = 0.005f;//1.25f;
+    	cameraSpeed = 0.0005f;//1.25f;
     	yawKludge = 0.01f;
     	pitchKludge = .1f;	
     	collisionDetected = false;
@@ -244,7 +244,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);	
     
     	
-    //		 		plane = new Plane();
+//    		 		plane = new Plane();
     	plane = new Ground();
     	hallManager = new HallManager(this, 3, 10.0f, -1.0f, 1.0f, -1.0f, 1.0f, 1.0f, 50.0f, this.objectMatrix, this.objectFinalMatrix, this.mMVPMatrix, this.wallXOffset, this.wallYOffset);
     	mSensorManager.registerListener(this, mSensor, SensorManager.SENSOR_DELAY_FASTEST);
@@ -285,7 +285,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	recordMeasurements();
     
     	resetMessages();
-    
+//    	image.draw(planeMatrix);
     }
     
     
@@ -819,7 +819,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	 glText.load( "Roboto-Regular.ttf", 14, 2, 2 );
     	 
     	image = new Image();
-    	image.loadTexture(context);
+    	//image.loadTexture(context);
     	
     	// Adjust the viewport based on geometry changes,
     	// such as screen rotation

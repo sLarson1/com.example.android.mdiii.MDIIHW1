@@ -53,9 +53,9 @@ public class Shooter implements Drawable {
 		drawable = new Ground();
 		
 		shooterWidth = 0.25f;
-		shooterHeight = 0.25f;
-		zTolerance = 0.50f;
-		xTolerance = 0.50f;
+		shooterHeight = 0.03f;
+		zTolerance = 0.450f;
+		xTolerance = 0.450f;
 	}
 
 
@@ -110,7 +110,7 @@ public class Shooter implements Drawable {
 
 			
 		){
-			String message = "collision detected! x:"+position.getX() +" y:"+position.getY() +" z:"+position.getZ() +" left wall:"+(-hallManager.getWallXOffset() +" right wall:"+hallManager.getWallXOffset() );
+			String message = "hitWall() collision detected! x:"+position.getX() +" y:"+position.getY() +" z:"+position.getZ() +" left wall:"+(-hallManager.getWallXOffset() +" right wall:"+hallManager.getWallXOffset() );
 			Log.i(TAG, message);
 			hallManager.renderer.pitchMessage = message;
 			return true;			
@@ -146,11 +146,12 @@ public class Shooter implements Drawable {
     			Math.abs(position.getZ() - planeZ) < zTolerance	
     		)
 		){
-			String message = "Plane collision: X:"+position.getX() +" planeX:" +planeX 
+			String message = "hitPlane() - Plane collision: X:"+position.getX() +" planeX:" +planeX 
 							+" Y:" +position.getY() +" planeY:"+planeY 
 							+" Z:" +position.getZ() +" planeY:"+planeZ;
-			Log.i(TAG, message);
+			Log.e(TAG, message);
 			hallManager.renderer.pitchMessage = message;
+System.exit(0)			;
 			return true;
 		}else{
 			return false;
