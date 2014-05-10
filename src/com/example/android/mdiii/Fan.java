@@ -56,6 +56,7 @@ public class Fan implements Drawable {
 	private float bladeInitialAngle;
 	private float bladeRotationRate;
 	private float bladeAngle;
+	private Blades otherBlades;
 
 
 
@@ -69,6 +70,7 @@ public class Fan implements Drawable {
 //		blades = new Rectangle();
 		blades = new Blades();
 //		blades = new Ground();
+		otherBlades = new Blades();
 		armInitialAngle = 45f;
 		armAngle = armInitialAngle;
 		bladeInitialAngle = armInitialAngle;
@@ -169,6 +171,51 @@ public class Fan implements Drawable {
 //	   drawBlades(lastMatrix);
 	   drawBlades(armMatrix);
    }	
+ 
+   public void drawBladesOtherBlade(float[] previousRotationMatrix){
+	   float[] rotationMatrix = new float[16];
+	   float[] offsetMatrix = new float[16];
+	   float[] tempMatrix = new float[16];
+	   float[] temp1Matrix = new float[16];
+	   float[] temp2Matrix = new float[16];
+	   float[] temp3Matrix = new float[16];
+	   float[] lastMatrix = new float[16];
+	   
+	   
+	   Matrix.setIdentityM(bottomBladeMatrix, 0);
+	   Matrix.setIdentityM(rotationMatrix, 0);
+	   Matrix.setIdentityM(offsetMatrix, 0);
+	   Matrix.setIdentityM(tempMatrix, 0);
+	   Matrix.setIdentityM(temp1Matrix, 0);
+	   Matrix.setIdentityM(temp2Matrix, 0);
+	   Matrix.setIdentityM(temp3Matrix, 0);
+	   Matrix.setIdentityM(lastMatrix, 0);
+
+	   
+		//	make it vertical
+       Matrix.rotateM(rotationMatrix, 0, 90.0f, 0, 0, 1);
+
+       //	move vertically down a little to center it on arm shaft
+       Matrix.translateM(offsetMatrix, 0, 0, -0.5f, 0 );	   
+       
+       // 	add rotation about new X axis
+       //	its actually the original Y axis
+       Matrix.rotateM(rotationMatrix, 0, 1.5f * bladeAngle, 0, 1, 0);
+
+       temp1Matrix = bottomBladeMatrix.clone();
+       Matrix.multiplyMM(bottomBladeMatrix, 0, temp1Matrix, 0,offsetMatrix, 0);
+       
+       tempMatrix = bottomBladeMatrix.clone();
+       Matrix.multiplyMM(bottomBladeMatrix, 0, tempMatrix, 0,rotationMatrix, 0);
+    
+	   temp2Matrix = mMVPMatrix.clone();
+	   Matrix.multiplyMM(lastMatrix, 0, mMVPMatrix, 0,bottomBladeMatrix, 0);       
+
+       otherBlades.draw(lastMatrix);
+       
+       changeBladeAngle();
+   }    
+   
    
    public void drawBlades(float[] previousRotationMatrix){
 	   float[] rotationMatrix = new float[16];
@@ -181,7 +228,6 @@ public class Fan implements Drawable {
 	   
 	   
 	   Matrix.setIdentityM(topBladeMatrix, 0);
-	   Matrix.setIdentityM(bottomBladeMatrix, 0);
 	   Matrix.setIdentityM(rotationMatrix, 0);
 	   Matrix.setIdentityM(offsetMatrix, 0);
 	   Matrix.setIdentityM(tempMatrix, 0);
@@ -216,6 +262,8 @@ public class Fan implements Drawable {
        blades.draw(lastMatrix);
        
        changeBladeAngle();
+       
+       this.drawBladesOtherBlade(topBladeMatrix);
    }    
 
    public void drawBladesWorkingWithOneBlade(float[] previousRotationMatrix){
