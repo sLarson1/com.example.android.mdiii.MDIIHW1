@@ -31,6 +31,8 @@ public class Fan implements Drawable {
 	private final float[] armMatrix = new float[16]; 
 	private final float[] topBladeMatrix = new float[16];
 	private final float[] bottomBladeMatrix = new float[16];
+	private final float[] lastBladeMatrix = new float[16];
+	private final float[] fourthBladeMatrix = new float[16];
 
 	private final float[] objectMatrix;
 	private final float[] mMVPMatrix;
@@ -57,6 +59,8 @@ public class Fan implements Drawable {
 	private float bladeRotationRate;
 	private float bladeAngle;
 	private Blades otherBlades;
+	private Blades lastBlades;
+	private Blades fourthBlades;
 
 
 
@@ -71,12 +75,14 @@ public class Fan implements Drawable {
 		blades = new Blades();
 //		blades = new Ground();
 		otherBlades = new Blades();
+		lastBlades = new Blades();
+		fourthBlades = new Blades();
 		armInitialAngle = 45f;
 		armAngle = armInitialAngle;
 		bladeInitialAngle = armInitialAngle;
 		bladeAngle = bladeInitialAngle;
 		armRotationRate = .10f;
-		bladeRotationRate = .075f;
+		bladeRotationRate = .095f;
 		armMaxAngle = 400.0f * armRotationRate;
 //FIXME - Remove this hack that limits downward movement - arm gets detached if you move too far down		
 //		armMinAngle = -0.001f * armMaxAngle;
@@ -172,6 +178,97 @@ public class Fan implements Drawable {
 	   drawBlades(armMatrix);
    }	
  
+   public void drawBladesLastBlade(float[] previousRotationMatrix){
+	   float[] rotationMatrix = new float[16];
+	   float[] offsetMatrix = new float[16];
+	   float[] tempMatrix = new float[16];
+	   float[] temp1Matrix = new float[16];
+	   float[] temp2Matrix = new float[16];
+	   float[] temp3Matrix = new float[16];
+	   float[] lastMatrix = new float[16];
+	   
+	   
+	   Matrix.setIdentityM(lastBladeMatrix, 0);
+	   Matrix.setIdentityM(rotationMatrix, 0);
+	   Matrix.setIdentityM(offsetMatrix, 0);
+	   Matrix.setIdentityM(tempMatrix, 0);
+	   Matrix.setIdentityM(temp1Matrix, 0);
+	   Matrix.setIdentityM(temp2Matrix, 0);
+	   Matrix.setIdentityM(temp3Matrix, 0);
+	   Matrix.setIdentityM(lastMatrix, 0);
+
+	   
+		//	make it vertical
+       Matrix.rotateM(rotationMatrix, 0, 90.0f, 0, 0, 1);
+
+       //	move vertically down a little to center it on arm shaft
+       Matrix.translateM(offsetMatrix, 0, 0, -0.5f, 0 );	   
+       
+       // 	add rotation about new X axis
+       //	its actually the original Y axis
+       Matrix.rotateM(rotationMatrix, 0, 230f + bladeAngle, 0, 1, 0);
+
+       temp1Matrix = lastBladeMatrix.clone();
+       Matrix.multiplyMM(lastBladeMatrix, 0, temp1Matrix, 0,offsetMatrix, 0);
+       
+       tempMatrix = lastBladeMatrix.clone();
+       Matrix.multiplyMM(lastBladeMatrix, 0, tempMatrix, 0,rotationMatrix, 0);
+    
+	   temp2Matrix = mMVPMatrix.clone();
+	   Matrix.multiplyMM(lastMatrix, 0, mMVPMatrix, 0,lastBladeMatrix, 0);       
+
+       otherBlades.draw(lastMatrix);
+       
+        changeBladeAngle();
+        
+//        this.drawBladesFourthBlade(lastMatrix);
+   }      
+   
+   public void drawBladesFourthBlade(float[] previousRotationMatrix){
+	   float[] rotationMatrix = new float[16];
+	   float[] offsetMatrix = new float[16];
+	   float[] tempMatrix = new float[16];
+	   float[] temp1Matrix = new float[16];
+	   float[] temp2Matrix = new float[16];
+	   float[] temp3Matrix = new float[16];
+	   float[] lastMatrix = new float[16];
+	   
+	   
+	   Matrix.setIdentityM(fourthBladeMatrix, 0);
+	   Matrix.setIdentityM(rotationMatrix, 0);
+	   Matrix.setIdentityM(offsetMatrix, 0);
+	   Matrix.setIdentityM(tempMatrix, 0);
+	   Matrix.setIdentityM(temp1Matrix, 0);
+	   Matrix.setIdentityM(temp2Matrix, 0);
+	   Matrix.setIdentityM(temp3Matrix, 0);
+	   Matrix.setIdentityM(lastMatrix, 0);
+
+	   
+		//	make it vertical
+       Matrix.rotateM(rotationMatrix, 0, 90.0f, 0, 0, 1);
+
+       //	move vertically down a little to center it on arm shaft
+       Matrix.translateM(offsetMatrix, 0, 0, -0.5f, 0 );	   
+       
+       // 	add rotation about new X axis
+       //	its actually the original Y axis
+       Matrix.rotateM(rotationMatrix, 0, 300f + bladeAngle, 0, 1, 0);
+
+       temp1Matrix = fourthBladeMatrix.clone();
+       Matrix.multiplyMM(fourthBladeMatrix, 0, temp1Matrix, 0,offsetMatrix, 0);
+       
+       tempMatrix = fourthBladeMatrix.clone();
+       Matrix.multiplyMM(fourthBladeMatrix, 0, tempMatrix, 0,rotationMatrix, 0);
+    
+	   temp2Matrix = mMVPMatrix.clone();
+	   Matrix.multiplyMM(lastMatrix, 0, mMVPMatrix, 0,fourthBladeMatrix, 0);       
+
+       otherBlades.draw(lastMatrix);
+       
+       
+       changeBladeAngle();
+   }         
+   
    public void drawBladesOtherBlade(float[] previousRotationMatrix){
 	   float[] rotationMatrix = new float[16];
 	   float[] offsetMatrix = new float[16];
@@ -200,7 +297,7 @@ public class Fan implements Drawable {
        
        // 	add rotation about new X axis
        //	its actually the original Y axis
-       Matrix.rotateM(rotationMatrix, 0, 1.5f * bladeAngle, 0, 1, 0);
+       Matrix.rotateM(rotationMatrix, 0, 90f + bladeAngle, 0, 1, 0);
 
        temp1Matrix = bottomBladeMatrix.clone();
        Matrix.multiplyMM(bottomBladeMatrix, 0, temp1Matrix, 0,offsetMatrix, 0);
@@ -214,6 +311,8 @@ public class Fan implements Drawable {
        otherBlades.draw(lastMatrix);
        
        changeBladeAngle();
+       
+       this.drawBladesLastBlade(bottomBladeMatrix);
    }    
    
    
