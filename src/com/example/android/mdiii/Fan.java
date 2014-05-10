@@ -67,14 +67,16 @@ public class Fan implements Drawable {
 		arm = new Ground();
 //		blades = new Blades();
 		blades = new Ground();
-		armInitialAngle = 0f;
+		armInitialAngle = 45f;
 		armAngle = armInitialAngle;
 		bladeInitialAngle = armInitialAngle;
 		bladeAngle = bladeInitialAngle;
 		armRotationRate = .10f;
-		bladeRotationRate = .025f;
+		bladeRotationRate = .075f;
 		armMaxAngle = 400.0f * armRotationRate;
-		armMinAngle = -armMaxAngle;
+//FIXME - Remove this hack that limits downward movement - arm gets detached if you move too far down		
+//		armMinAngle = -0.001f * armMaxAngle;
+		armMinAngle = 0.5f * armMaxAngle;
 		armRotationDirection = "up";
 		firstRun = true;
 		xOriginOffset= 0.25f;
@@ -494,12 +496,14 @@ public class Fan implements Drawable {
 			if(armAngle + armRotationRate > armMaxAngle ){
 				armRotationDirection = "down";
 				armAngle -= armRotationRate;
+				Log.i(TAG, "arm switching direction to down.  armminAngle:"+armMaxAngle +" current angle:"+armAngle);
 			}else{
 				armAngle += armRotationRate;
 			}
 		}else if( armRotationDirection.equals("down")) {
 			if(armAngle - armRotationRate < armMinAngle ){
 				armRotationDirection = "up";
+				Log.i(TAG, "arm switching direction to up.  armminAngle:"+armMinAngle +" current angle:"+armAngle);
 				armAngle += armRotationRate;
 			}else{
 				armAngle -= armRotationRate;
