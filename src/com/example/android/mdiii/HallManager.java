@@ -102,7 +102,7 @@ public class HallManager {
 		contentsMap = new HashMap<Coord, Drawable>();
 		Coord coord = new Coord(0f, -0.3f, 12.0f );
 		Coord coord1 = new Coord(0f, 0f, 10f );
-		Coord coord2 = new Coord(0f, 0f, 14.0f );
+		Coord coord2 = new Coord(0f, 0f, 9.0f );
 		Coord coord3 = new Coord(0f, 0f, 19.0f );
 		Coord coord4 = new Coord(0f, 0f, 25.0f );
 		Coord coord5 = new Coord(0f, 0f, 30.0f );
@@ -119,7 +119,7 @@ public class HallManager {
 		
 //		contentsMap.put(coord, obj);
 		contentsMap.put(coord2, obj2);
-	    contentsMap.put(coord3, obj3);
+//	    contentsMap.put(coord3, obj3);
 /*	    
 	    contentsMap.put(coord4, obj4);
 	    contentsMap.put(coord5, obj5);
@@ -145,6 +145,7 @@ public class HallManager {
 						if(true)
 		{
 
+//FIXME put back walls							
 /*				   	
 		if (drawEndlessVerticalWall(currentZ, HallManager.this.wallXOffset) 
 				&& drawEndlessVerticalWall(currentZ, -1.0f * HallManager.this.wallXOffset)

@@ -37,7 +37,6 @@ public class Accelerometer implements SensorEventListener {
 
 	@Override
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
-		// TODO Auto-generated method stub
 		
 	}
 

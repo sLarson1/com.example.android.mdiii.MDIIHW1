@@ -168,7 +168,6 @@ System.exit(0)			;
 	 */
 	@Override
 	public void draw(float[] mvpMatrix) {
-		// TODO Auto-generated method stub
 
 	}
 	
@@ -178,7 +177,6 @@ System.exit(0)			;
 	 */
 	@Override
 	public boolean isFinished() {
-		// TODO Auto-generated method stub
 		if(!isFinished){
 			isFinished = hitWall() || hitPlane();
 		}

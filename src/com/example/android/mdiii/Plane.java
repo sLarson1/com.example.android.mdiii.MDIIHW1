@@ -217,7 +217,6 @@ public class Plane implements Drawable{
  */
 @Override
 public boolean isFinished() {
-	// TODO Auto-generated method stub
 	return isFinished;
 }
 
@@ -227,7 +226,6 @@ public boolean isFinished() {
  */
 @Override
 public void draw(Coord coord, float[] mvpMatrix) {
-	// TODO Auto-generated method stub
 	
 }	
 

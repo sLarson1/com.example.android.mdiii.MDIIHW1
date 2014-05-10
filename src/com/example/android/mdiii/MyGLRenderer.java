@@ -179,7 +179,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	
     	yaw = 0f;
     //		 		cameraSpeed = 0.01f;//1.25f;
-    	cameraSpeed = 0.00015f;//1.25f;
+    	cameraSpeed = 0.00004f;//1.25f;
     	yawKludge = 0.01f;
     	pitchKludge = .1f;	
     	collisionDetected = false;
@@ -273,7 +273,8 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	hallManager.draw(cameraZ);
     
 //    	drawPlane(objectMatrix, objectFinalMatrix);
-    	drawPlane(objectMatrix, rotationMatrix, objectFinalMatrix);
+//FIXME put plane back
+//    	drawPlane(objectMatrix, rotationMatrix, objectFinalMatrix);
     	drawTexture();
     	
     	updateDirection();
@@ -281,7 +282,7 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
     	updateLookAt();
     	updatePlanePosition();
 //FIXME put back gravity    	
-    	updateGravity();
+//    	updateGravity();
     	recordMeasurements();
     
     	resetMessages();
@@ -326,7 +327,6 @@ instead of switching actual halls why don't we just compare the currentZ wtih a 
 						Thread.sleep(250);
 						image.draw(planeMatrix);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					

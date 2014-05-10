@@ -310,7 +310,6 @@ public class Image implements Drawable {
 	 */
 	@Override
 	public void draw(Coord coord, float[] mvpMatrix) {
-		// TODO Auto-generated method stub
 		
 	}
 

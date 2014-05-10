@@ -112,7 +112,6 @@ public class CopyOfHallManager_3_20_2014_1953 {
 
 	
 	private void setCurrentHall(float currentZ) {
-		// TODO Auto-generated method stub
 		for(Hall hall : halls){
 			
 		}
