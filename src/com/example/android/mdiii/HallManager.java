@@ -102,6 +102,7 @@ public class HallManager {
 		contentsMap = new HashMap<Coord, Drawable>();
 		Coord coord = new Coord(0f, -0.3f, 12.0f );
 		Coord coord1 = new Coord(0f, 0f, 10f );
+//		Coord coord2 = new Coord(-.250f, 0f, 9.0f );
 		Coord coord2 = new Coord(0f, 0f, 9.0f );
 		Coord coord3 = new Coord(0f, 0f, 19.0f );
 		Coord coord4 = new Coord(0f, 0f, 25.0f );
@@ -115,12 +116,11 @@ public class HallManager {
 		Drawable obj4 = new Fan(coord4, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 		Drawable obj5 = new Fan(coord5, this.wallMatrix, this.mMVPMatrix, this.finalWallMatrix);
 //FIXME put back contents		
-//		contentsMap.put(coord1, obj1);
-		
-//		contentsMap.put(coord, obj);
+		contentsMap.put(coord1, obj1);
+		contentsMap.put(coord, obj);
 		contentsMap.put(coord2, obj2);
-//	    contentsMap.put(coord3, obj3);
-/*	    
+/*		contentsMap.put(coord3, obj3);
+	    
 	    contentsMap.put(coord4, obj4);
 	    contentsMap.put(coord5, obj5);
 */
@@ -142,17 +142,17 @@ public class HallManager {
 	
 	
 	protected boolean draw(float currentZ){
-						if(true)
+					if(true)
 		{
 
 //FIXME put back walls							
-/*				   	
+/*					   	
 		if (drawEndlessVerticalWall(currentZ, HallManager.this.wallXOffset) 
 				&& drawEndlessVerticalWall(currentZ, -1.0f * HallManager.this.wallXOffset)
 	            && drawEndlessHorizontalWall(currentZ, HallManager.this.wallYOffset)
 	            && drawEndlessHorizontalWall(currentZ, -1.0f * HallManager.this.wallYOffset)){
-
-*/						
+*/
+						
 			boolean results = false;
 			// Now draw hall content
 			for(int i = 0; i<this.numberOfHalls ; i++){
