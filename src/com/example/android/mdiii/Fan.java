@@ -1,3 +1,11 @@
+/*
+slow camera down
+move fan closer
+blades - rotate at origin, 
+move a little to the left to simulate its at the end of the arm,
+next multiply it by the previous arm matrix to put it
+in the right spot
+*/
 //why does the second arm work and not the first?
 /**
  * started blade work
@@ -76,13 +84,12 @@ public class Fan implements Drawable {
 		bladeCoord = new Coord(armCoord.getX() + bladeCoordOffset, armCoord.getY() +( 1 *bladeCoordOffset), armCoord.getZ() + bladeCoordOffset);
 		//armCoord.setX(armCoord.getX() + baseCoordinate.getX());
 		
-	    Matrix.setIdentityM(armMatrix, 0);
-	    Matrix.setIdentityM(baseMatrix, 0);
 	}
 
 	public void drawBase(){
 		printMatrix(baseMatrix);
 
+		Matrix.setIdentityM(baseMatrix, 0);
         Matrix.setIdentityM(objectMatrix, 0);
         
         
@@ -103,6 +110,82 @@ public class Fan implements Drawable {
 
    @SuppressLint("NewApi")
    public void drawArm(float[] previousRotationMatrix){
+	   
+	   float[] offsetMatrix = new float[16];
+	   float[] rotationMatrix = new float[16];
+	   float[] translationMatrix = new float[16];
+	   float[] tempMatrix = new float[16];
+	   float[] temp2Matrix = new float[16];
+	   float[] temp3Matrix = new float[16];
+	   float[] temp4Matrix = new float[16];
+
+	   Matrix.setIdentityM(armMatrix, 0);
+	   Matrix.setIdentityM(offsetMatrix, 0);
+	   Matrix.setIdentityM(rotationMatrix, 0);
+	   Matrix.setIdentityM(translationMatrix, 0);
+	   Matrix.setIdentityM(tempMatrix, 0);
+	   Matrix.setIdentityM(temp2Matrix, 0);
+	   Matrix.setIdentityM(temp3Matrix, 0);
+	   Matrix.setIdentityM(temp4Matrix, 0);
+
+//	   Matrix.translateM(offsetMatrix, 0, 0.5f, 0, 0 );
+//	   Matrix.translateM(offsetMatrix, 0, 0.125f, 0, 0 );
+	   Matrix.translateM(offsetMatrix, 0, 0.85f, 0, 0 );
+	   
+	   Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
+	   
+	   Matrix.translateM(translationMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
+	   
+	   tempMatrix = armMatrix.clone();
+	   Matrix.multiplyMM(armMatrix, 0, tempMatrix, 0,offsetMatrix, 0);
+	   
+	   temp2Matrix = armMatrix.clone();
+	   Matrix.multiplyMM(armMatrix, 0, temp2Matrix, 0,rotationMatrix, 0);
+	   
+	   temp3Matrix = armMatrix.clone();
+	   Matrix.multiplyMM(armMatrix, 0, temp3Matrix, 0,translationMatrix, 0);
+	   
+	   temp4Matrix = mMVPMatrix.clone();
+	   Matrix.multiplyMM(mMVPMatrix, 0, temp4Matrix, 0,armMatrix, 0);
+	   
+	   arm.draw(mMVPMatrix);
+	   
+	   changeArmAngle();
+	   
+	   Log.i(TAG, "finished arm.draw()");
+   }	
+	
+	   @SuppressLint("NewApi")
+	   public void drawArmWorksKindOf(float[] previousRotationMatrix){
+		   
+		   float[] rotationMatrix = new float[16];
+		   float[] tempMatrix = new float[16];
+
+		   Matrix.setIdentityM(rotationMatrix, 0);
+		   Matrix.setIdentityM(tempMatrix, 0);
+		   Matrix.setIdentityM(armMatrix, 0);
+	
+		   
+		   Matrix.translateM(armMatrix, 0, armCoord.getX(), armCoord.getY(), armCoord.getZ() );
+		   
+		   Matrix.rotateM(rotationMatrix, 0, armAngle, 0, 0, 1);
+		   
+		   tempMatrix = armMatrix.clone();
+		   Matrix.multiplyMM(armMatrix, 0, tempMatrix, 0,rotationMatrix, 0);
+		   
+		   tempMatrix = mMVPMatrix.clone();
+		   Matrix.multiplyMM(mMVPMatrix, 0, tempMatrix, 0,armMatrix, 0);
+		   
+		   arm.draw(mMVPMatrix);
+		   
+		   changeArmAngle();
+		   
+		   Log.i(TAG, "finished arm.draw()");
+	   }
+	
+	
+   @SuppressLint("NewApi")
+   public void drawArm2(float[] previousRotationMatrix){
 
       printMatrix(finalMatrix);
       float[] rotationMatrix = new float[16];
@@ -147,9 +230,9 @@ public class Fan implements Drawable {
       Matrix.multiplyMM(tempMatrix, 0, rotationMatrix, 0,offsetMatrix, 0);      
       
       Matrix.multiplyMM(armMatrix, 0, mMVPMatrix, 0,tempMatrix, 0);
-*/
+
       Matrix.multiplyMM(armMatrix, 0, mMVPMatrix, 0,rotationMatrix, 0);
-      
+*/      
       //  draw arm
       arm.draw(armMatrix);
       
